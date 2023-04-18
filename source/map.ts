@@ -2,7 +2,7 @@ import City from './city'
 
 export default class Map {
 
-    dom: { [key: string]: any } ;
+    dom: { [key: string]: Element } ;
     cities: Array<City>;
 
     constructor(svg: SVGSVGElement){
