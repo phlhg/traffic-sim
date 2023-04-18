@@ -2,9 +2,12 @@ import City from './city'
 
 export default class Map {
 
-    constructor(svg){
-        this.dom = {}
-        this.dom.svg = svg
+    dom: { [key: string]: any } ;
+    cities: Array<City>;
+
+    constructor(svg: SVGSVGElement){
+        this.dom = {};
+        this.dom.svg = svg;
 
         this.cities = []
     }
@@ -13,7 +16,7 @@ export default class Map {
         this.dom.svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`)
     }
 
-    addCity(x, y){
+    addCity(x: number, y: number){
         this.cities.push(new City(x, y, 500 + Math.round(Math.random() * Math.pow(10,6))))
         return this.cities[this.cities.length - 1]
     }
@@ -35,10 +38,10 @@ export default class Map {
             closest.slice(1, 4).forEach(j => {
                 let b = this.cities[j]
                 let l = document.createElementNS("http://www.w3.org/2000/svg", "line")
-                l.setAttribute('x1', a.x)
-                l.setAttribute('y1', a.y)
-                l.setAttribute('x2', b.x)
-                l.setAttribute('y2', b.y)
+                l.setAttribute('x1', `${a.x}`)
+                l.setAttribute('y1', `${a.y}`)
+                l.setAttribute('x2', `${b.x}`)
+                l.setAttribute('y2', `${b.y}`)
                 l.setAttribute('class', 'road')
                 this.dom.svg.appendChild(l)
             })
@@ -49,9 +52,9 @@ export default class Map {
         for(let i = 0; i < this.cities.length; i++){
             let city = this.cities[i]
             let c = document.createElementNS("http://www.w3.org/2000/svg", "circle")
-            c.setAttribute('cx', city.x)
-            c.setAttribute('cy', city.y)
-            c.setAttribute('r', 1 + 2*Math.log(city.size / 1000))
+            c.setAttribute('cx', `${city.x}`)
+            c.setAttribute('cy', `${city.y}`)
+            c.setAttribute('r', `${1 + 2*Math.log(city.size / 1000)}`)
             c.setAttribute('class', 'city')
             let t = document.createElementNS("http://www.w3.org/2000/svg", "title")
             t.innerHTML = `Population: ${city.size.toLocaleString()}`

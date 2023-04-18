@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener("resize", () => { map.adjustSize() })
 
-    map.dom.svg.addEventListener("click", (e) => {
+    map.dom.svg.addEventListener("click", (e: MouseEvent) => {
         map.addCity(e.clientX, e.clientY)
         map.draw()
     })
