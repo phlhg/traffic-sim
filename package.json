@@ -1,0 +1,26 @@
+{
+  "name": "traffic-sim",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phlhg/traffic-sim"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phlhg/traffic-sim/issues"
+  },
+  "homepage": "https://github.com/phlhg/traffic-sim#readme",
+  "devDependencies": {
+    "terser-webpack-plugin": "^5.3.6",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^4.10.0"
+  }
+}

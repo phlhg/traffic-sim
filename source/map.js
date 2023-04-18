@@ -1,19 +1,6 @@
+import City from './city'
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    map = new Map(document.querySelector('svg'))
-    map.adjustSize()
-
-    window.addEventListener("resize", () => { map.adjustSize() })
-
-    map.dom.svg.addEventListener("click", (e) => {
-        map.addCity(e.clientX, e.clientY)
-        map.draw()
-    })
-
-})
-
-class Map {
+export default class Map {
 
     constructor(svg){
         this.dom = {}
@@ -72,16 +59,6 @@ class Map {
             this.dom.svg.appendChild(c)
         }
 
-    }
-
-}
-
-class City {
-
-    constructor(x, y, size){
-        this.x = x
-        this.y = y
-        this.size = size
     }
 
 }
