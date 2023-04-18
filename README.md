@@ -69,10 +69,10 @@ If you changed a file in `/source/`, you will have to run this command, for your
 
 ### 5. Run the server
 
-Now that we built our files we want to run a local server - Enter the `/public/` directory of the project and run:
+Now that we built our files we want to run a local server - Enter the root directory of the project and run:
 
 ```
-python3 -m http.server 8080 --bind 127.0.0.1 --directory /public/
+python3 -m http.server 8080 --bind 127.0.0.1 --directory public/
 ```
 
 > ℹ️ **VS Code**  
