@@ -19,7 +19,8 @@ export default class Map {
     }
 
     adjustSize(){
-        this.dom.svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`)
+        let rect = this.dom.svg.getBoundingClientRect();
+        this.dom.svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`)
     }
 
     addCity(x, y){
