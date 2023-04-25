@@ -2,10 +2,75 @@
 html, body { color: #000; background: #fff; font-family: 'Montserrat', sans-serif; padding: 0; margin: 0; width: 100%; height: 100%; }
 body { overflow-x: hidden; }
 
-body > svg {
+.controls .button {
+    transition: all 200ms ease-in-out;
+}
+
+.map {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 90%;
+    height: 100%;
+    max-width: calc(100vw - 400px);
+}
+
+.map > svg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+.controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%;
+    height: 100%;
+    min-width: 400px;
+    border-left: 1px solid #eee;
+    padding: 70px 20px 20px 20px;
+    background: #fff;
+}
+
+.controls > header {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; 
+    height: 50px;
+    line-height: 20px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.controls .button {
+    position: relative;
+    width: 100%;
+    padding: 15px 20px;
+    text-align: left;
+    border: 1px solid #eee;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background: #fff;
+}
+
+.controls .button:hover{
+    width: 100%;
+    background: #efefef;
+}
+
+.controls .button.clear {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border: none;
+    background: #111;
+    color: #fff;
+    margin: 0;
+}
+
+.controls .button.clear:hover {
+    background: #c00;
 }
