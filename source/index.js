@@ -4,7 +4,7 @@ import {startbrute} from './util/bruteforce'
 document.addEventListener('DOMContentLoaded', () => {
 
 
-    let map = new Map(document.querySelector('svg'))
+    let map = new Map(document.querySelector('.map'))
     map.adjustSize()
 
     window.addEventListener("resize", () => { map.adjustSize() })

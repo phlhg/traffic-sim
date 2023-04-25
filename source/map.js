@@ -2,9 +2,13 @@ import City from './city'
 
 export default class Map {
 
-    constructor(svg){
+    constructor(wrapper){
         this.dom = {}
-        this.dom.svg = svg
+        this.dom.wrapper = wrapper;
+        this.dom.svg = wrapper.querySelector("svg");
+        this.dom.notice = wrapper.querySelector(".notice");
+
+        this.dom.notice.classList.add("active");
 
         this.cities = []
         this.best = 99999999999
@@ -12,10 +16,10 @@ export default class Map {
     }
 
     clear() {
-        //this.dom={}
         this.cities = []
         this.best = 99999999999
         this.bestseq = []
+        this.dom.notice.classList.add("active");
     }
 
     adjustSize(){
@@ -27,6 +31,7 @@ export default class Map {
         this.cities.push(new City(x, y, 500 + Math.round(Math.random() * Math.pow(10,6))))
         this.best = 999999999999
         this.bestseq = []
+        this.dom.notice.classList.remove("active");
         return this.cities[this.cities.length - 1]
     }
 
