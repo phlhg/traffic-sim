@@ -80,6 +80,31 @@ body { overflow-x: hidden; }
     background: #1f1f1f;
 }
 
+.controls .button::after {
+    content: 'sync';
+    font-family: 'Material Symbols Outlined';
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    line-height: 20px;
+    font-size: 1.2em;
+    opacity: 0;
+}
+
+.controls .button.running { 
+    border-right-color: #008106;
+}
+
+.controls .button.running::after{
+    opacity: 1;
+    animation: rotation 2000ms linear 0ms infinite forwards;
+}
+
+@keyframes rotation {
+    0% { transform: rotateZ(0deg); }
+    100% { transform: rotateZ(-360deg); }
+}
+
 .controls .button.clear {
     position: absolute;
     bottom: 0;

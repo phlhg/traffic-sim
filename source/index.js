@@ -19,9 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     var btn_brute = document.getElementById("brute");
 
     btn_c.addEventListener("click", () => { map.clear(); map.draw()})
-    btn_brute.addEventListener("click", () => { startbrute(map) })
 
-
-
+    btn_brute.addEventListener("click", async () => { 
+        if(btn_brute.classList.contains("running")){ return; }
+        btn_brute.classList.add("running");
+        await startbrute(map)
+        btn_brute.classList.remove("running");
+    })
 
 })
