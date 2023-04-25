@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("resize", () => { map.adjustSize() })
 
     map.dom.svg.addEventListener("click", (e) => {
-        map.addCity(e.clientX, e.clientY)
+        let rect = e.target.getBoundingClientRect();
+        map.addCity(e.clientX - rect.left, e.clientY - rect.top)
         map.draw()
     })
 
