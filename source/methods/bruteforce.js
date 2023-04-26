@@ -2,26 +2,13 @@ import { permute, sleep } from "../utils";
 import Message from "../utils/message";
 import Method from "./method"
 
-function calcWeight(path){
-
-    var weight = 0;
-    for(let i = 0; i < path.length; i++){
-        let a = path[i];
-        let b = path[(i+1)%path.length]
-        weight += Math.sqrt(
-            Math.pow(a.x - b.x,2) + Math.pow(a.y - b.y,2)
-        );
-    }
-
-    return weight;
-
-}
-
 export default class Bruteforce extends Method {
 
     constructor(...data){
 
         super(...data);
+
+        this.worker = null;
 
         this.name = "Bruteforce";
         this.description = "Naive approach to solving the Travelling Salesmen Problem by simply iterating over all possible paths and selecting the path with minimal cost."
@@ -31,43 +18,45 @@ export default class Bruteforce extends Method {
 
     async run(){
 
+        let m = null;
+
         if(this.app.map.cities.length > 10){
-            // TODO: Try to mitigate with Web Workers?
-            Message.warning("Bruteforce shouldn't be used with more than 10 cities, since it could crash the browser.");
-            return; 
+            m = Message.warning("Bruteforce with more than 10 cities will take some time", -1);
+            //return; 
         }
 
         if(this.running){ return; }
         this.running = true;
 
-        var opt = Infinity;
-        var opt_perm = [];
-    
-        var perm_gen = permute([...this.app.map.cities])
-        var perm = perm_gen.next();
-    
-        while(!perm.done){
-            var w = calcWeight(perm.value);
-    
-            if(w < opt){
-                opt = w;
-                opt_perm = perm.value;
-    
-                this.app.map.roads = [];
-                for(let i = 0; i < opt_perm.length; i++){
-                    this.app.map.addRoad(opt_perm[i],opt_perm[(i+1)%opt_perm.length])
-                }
-                
-                this.app.map.draw();
-    
-                await sleep(100);
+        this.worker = new Worker('/js/workers/bruteforce.js');
+
+        this.worker.onmessage = e => {
+            let perm = e.data.value;
+            this.app.map.roads = [];
+            for(let i = 0; i < perm.length; i++){
+                this.app.map.addRoad(perm[i],perm[(i+1)%perm.length])
             }
-    
-            perm = perm_gen.next();
+            this.app.map.draw();
+
+            if(e.data.done){ this.running = false; }
         }
 
-        this.running = false;
+        this.worker.postMessage({cities: [...this.app.map.cities]});
 
+        while(this.running){ await sleep(100); }
+
+        this.worker.terminate();
+        this.worker = null;
+
+        if(m !== null){ m.hide(); }
+
+    }
+
+    async stop(){
+
+        if(!this.running){ return; }
+        this.running = false;
+        
     }
 
 }

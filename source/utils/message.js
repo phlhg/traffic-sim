@@ -31,7 +31,7 @@ class Message {
             this.dom.wrapper.classList.add("active");
         },100);
 
-        setTimeout(this.hide.bind(this), 100 + this.duration);
+        if(this.duration >= 0){ setTimeout(this.hide.bind(this), 100 + this.duration); }
     }
 
     hide(){

@@ -26,9 +26,9 @@ export default class Method {
         let btn = e.querySelector(".button");
 
         btn.onclick = () => {
-            btn.classList.add("running");
-            this.run().finally(() => {
-                btn.classList.remove("running");
+            btn.classList.toggle("running", !this.running);
+            this.toggle().finally(() => {
+                btn.classList.toggle("running", this.running);
             });
         };
 
@@ -38,8 +38,21 @@ export default class Method {
     async run(){
         if(this.running){ return; }
         this.running = true;
-        await sleep(1000); 
+        await sleep(1000);
         this.running = false;
+    }
+
+    async stop(){
+        if(!this.running){ return; }
+        this.running = false;
+    }
+
+    async toggle(){
+        if(this.running){
+            await this.stop();
+        } else {
+            await this.run();
+        }
     }
 
 }
