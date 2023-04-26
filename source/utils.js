@@ -1,19 +1,18 @@
-export function permute(inputArr) {
-    
-    function* p(bef, ina) {
-        if (ina.length == 0) {
-            yield bef
-        }
-        for (let i = 0; i < ina.length; i++) {
-            let rest = ina.splice(i, 1)
+function* p(arr, acc){
 
-            yield* p(bef.concat(rest), ina)
+    if(arr.length < 1){ yield acc; }
 
-            ina.splice(i, 0, rest[0])
-        }
+    for(let i = 0; i < arr.length; i++){
+        yield* p(
+            arr.slice(0, i).concat(arr.slice(i+1)), // arr without element at pos i
+            acc.concat([arr[i]])
+        )
     }
 
-    return p([], inputArr)
+}
+
+export function permute(arr){
+    return p(arr,[])
 }
 
 export function sleep(ms) {
