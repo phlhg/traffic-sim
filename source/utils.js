@@ -1,4 +1,3 @@
-
 export function permute(inputArr) {
     
     function* p(bef, ina) {
