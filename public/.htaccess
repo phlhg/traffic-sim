@@ -1,0 +1,13 @@
+AddDefaultCharset UTF-8
+
+# Options 
+Options -Indexes -Multiviews
+
+# Enable URI rewriting
+RewriteEngine on
+RewriteBase /
+
+# Redirect to https://
+RewriteCond %{HTTP_HOST} !^ome\.phlhg\.ch
+RewriteCond %{HTTPS} off 
+RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,QSA,R=301]

@@ -36,6 +36,22 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			}
+		},{
+			"label": "Publish",
+			"type": "shell",
+			"command": "rsync -azPv public/ phWeb:web/ome.phlhg.ch/",
+			"windows": {
+				"command": "echo \"Not implemented\""
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
 		}
 	]
 }
