@@ -2,6 +2,7 @@
 html, body { color: #fff; background: #111; font-family: 'Roboto', sans-serif; padding: 0; margin: 0; width: 100%; height: 100%; }
 body { overflow-x: hidden; }
 
+.message,
 .map > .notice,
 .controls .clear-button,
 .controls .button {
@@ -168,4 +169,32 @@ body { overflow-x: hidden; }
 
 .controls .clear-button:hover {
     background: #c00;
+}
+
+.message {
+    position: fixed;
+    display: inline-block;
+    left: 50%;
+    top: 0;
+    width: 100%;
+    max-width: 600px;
+    background: #111;
+    border: 1px solid #1f1f1f;
+    border-top: none;
+    padding: 20px 20px 20px 60px;
+    transform: translate(-50%, -100%);
+    z-index: 200;
+}
+
+.message > span {
+    position: absolute;
+    top: 20px; left: 20px;
+}
+
+.message.error > span { color: #d62c2c; }
+.message.warning > span { color: #ffd900; }
+.message.info > span { color: #008cff; }
+
+.message.active {
+    transform: translate(-50%, 0);
 }
