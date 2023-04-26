@@ -2,17 +2,33 @@ import City from './city'
 
 export default class Map {
 
-    constructor(wrapper){
+    constructor(app,wrapper){
+        this.app = app;
+
         this.dom = {}
         this.dom.wrapper = wrapper;
         this.dom.svg = wrapper.querySelector("svg");
         this.dom.notice = wrapper.querySelector(".notice");
         this.dom.notice.classList.add("active");
 
-        this.cities = []
-        this.roads = []
+        this.cities = [];
+        this.roads = [];
 
-        this.clear()
+        this.adjustSize();
+        this.setEvents();
+        this.clear();
+    }
+
+    setEvents(){
+
+        window.addEventListener("resize", this.adjustSize.bind(this));
+
+        this.dom.svg.addEventListener("click", (e) => {
+            let rect = e.target.getBoundingClientRect();
+            this.addCity(e.clientX - rect.left, e.clientY - rect.top)
+            this.draw()
+        })
+
     }
 
     clear() {
