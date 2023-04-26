@@ -1,4 +1,5 @@
 import { permute, sleep } from "../utils";
+import Message from "../utils/message";
 import Method from "./method"
 
 function calcWeight(path){
@@ -29,6 +30,12 @@ export default class Bruteforce extends Method {
 
 
     async run(){
+
+        if(this.app.map.cities.length > 10){
+            // TODO: Try to mitigate with Web Workers?
+            Message.warning("Bruteforce shouldn't be used with more than 10 cities, since it could crash the browser.");
+            return; 
+        }
 
         if(this.running){ return; }
         this.running = true;
