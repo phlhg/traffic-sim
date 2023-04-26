@@ -3,6 +3,7 @@
     <head>
         <title>ACO Traffic Optimizer</title>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=1">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
         <link href="css/main.css" rel="stylesheet" type="text/css">
@@ -10,16 +11,24 @@
         <script src="js/main.js"></script>
     </head>
     <body>
-        <div class="map">
+        <section class="map">
             <svg viewBox="0 0 1000 1000" ></svg>
             <span class="notice">Click to add cities</span>
-        </div>
-        <div class="controls">
+        </section>
+        <section class="controls">
             <header>
                 <strong>ACO</strong> Traffic Optimizer
             </header>
-            <div class="button" id="brute">Bruteforce TSP</div>
-            <div class="button clear" id="clear">Clear</div>
-        </div>
+            <div class="content">
+                <div class="method">
+                    <strong>Bruteforce</strong>
+                    <span class="description">
+                        Naive approach to solving the Travelling Salesmen Problem by simply iterating over all possible paths and selecting the path with minimal cost.
+                    </span>
+                    <div class="button" id="brute">Run</div>
+                </div>
+            </div>
+            <div class="clear-button" id="clear">Clear</div>
+        </section>
     </body>
 </html>
