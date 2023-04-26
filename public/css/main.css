@@ -5,7 +5,9 @@ body { overflow-x: hidden; }
 .message,
 .map > .notice,
 .controls .clear-button,
-.controls .button {
+.controls .button
+.controls .button::after,
+.controls .button::before {
     transition: all 200ms ease-in-out;
 }
 
@@ -123,6 +125,7 @@ body { overflow-x: hidden; }
 .controls .button::after {
     content: 'autorenew';
     opacity: 0;
+    animation: rotation 2000ms linear 0ms infinite forwards;
 }
 
 .controls .button::before {
@@ -130,14 +133,13 @@ body { overflow-x: hidden; }
     opacity: 1;
 }
 
-.controls .button.running::after {
-    opacity: 1;
-    animation: rotation 2000ms linear 0ms infinite forwards;
-}
 
-.controls .button.running::before {
-    opacity: 0;
-} 
+.controls .button.running::before { opacity: 0; content: 'stop_circle'; } 
+.controls .button.running::after { opacity: 1; }
+
+.controls .button.running:hover { background: #c00; }
+.controls .button.running:hover::before { opacity: 1; }
+.controls .button.running:hover::after { opacity: 0; }
 
 @keyframes rotation {
     0% { transform: rotateZ(0deg); }
