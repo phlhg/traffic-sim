@@ -3,6 +3,7 @@ html, body { color: #fff; background: #111; font-family: 'Roboto', sans-serif; p
 body { overflow-x: hidden; }
 
 .map > .notice,
+.controls .clear-button,
 .controls .button {
     transition: all 200ms ease-in-out;
 }
@@ -50,7 +51,7 @@ body { overflow-x: hidden; }
     height: 100%;
     min-width: 400px;
     border-left: 1px solid #1f1f1f;
-    padding: 70px 20px 20px 20px;
+    padding: 50px 0 0 0;
     background: #111;
 }
 
@@ -64,57 +65,107 @@ body { overflow-x: hidden; }
     border-bottom: 1px solid #1f1f1f;
 }
 
+.controls > .content {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 50px - 50px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.controls .method { 
+    position: relative;
+    padding: 20px;
+    border-bottom: 1px solid #1f1f1f;
+    line-height: 25px;
+}
+
+.controls .method strong:first-of-type {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.controls .method .description {
+    display: block;
+    position: relative;
+}
+
 .controls .button {
     position: relative;
-    width: 100%;
-    padding: 15px 20px;
+    display: inline-block;
+    padding: 10px 60px 10px 20px;
     text-align: left;
     border: 1px solid #1f1f1f;
     cursor: pointer;
-    margin-bottom: 10px;
+    margin-top: 15px;
     background: #111;
 }
 
-.controls .button:hover{
-    width: 100%;
-    background: #1f1f1f;
+.controls .button.running, 
+.controls .button:hover {
+    background: #008106;
+}
+
+
+.controls .button::before,
+.controls .button::after {
+    font-family: 'Material Symbols Outlined';
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    line-height: 20px;
+    font-size: 1.2em;
 }
 
 .controls .button::after {
-    content: 'sync';
+    content: 'autorenew';
+    opacity: 0;
+}
+
+.controls .button::before {
+    content: 'play_arrow';
+    opacity: 1;
+}
+
+.controls .button.running::after {
+    opacity: 1;
+    animation: rotation 2000ms linear 0ms infinite forwards;
+}
+
+.controls .button.running::before {
+    opacity: 0;
+} 
+
+@keyframes rotation {
+    0% { transform: rotateZ(0deg); }
+    100% { transform: rotateZ(360deg); }
+}
+
+.controls .clear-button {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #1f1f1f;
+    margin: 0;
+    padding: 15px 20px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.controls .clear-button::after {
+    content: 'delete';
     font-family: 'Material Symbols Outlined';
     position: absolute;
     top: 15px;
     right: 20px;
     line-height: 20px;
     font-size: 1.2em;
-    opacity: 0;
 }
 
-.controls .button.running { 
-    border-right-color: #008106;
-}
-
-.controls .button.running::after{
-    opacity: 1;
-    animation: rotation 2000ms linear 0ms infinite forwards;
-}
-
-@keyframes rotation {
-    0% { transform: rotateZ(0deg); }
-    100% { transform: rotateZ(-360deg); }
-}
-
-.controls .button.clear {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    border: none;
-    background: #1f1f1f;
-    color: #fff;
-    margin: 0;
-}
-
-.controls .button.clear:hover {
+.controls .clear-button:hover {
     background: #c00;
 }
