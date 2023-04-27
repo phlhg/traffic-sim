@@ -1,4 +1,4 @@
-import { permute, sleep } from "../utils";
+import { factorial, permute, sleep } from "../utils";
 
 function calcWeight(path){
 
@@ -17,17 +17,18 @@ function calcWeight(path){
 
 onmessage = async e => {
 
-    console.log("Received");
-
     var opt = Infinity;
     var opt_perm = [];
 
     var perm_gen = permute(e.data.cities)
     var perm = perm_gen.next();
 
+    var perm_amount = factorial(e.data.cities.length);
+    var perm_done = 0;
+
     while(!perm.done){
         var w = calcWeight(perm.value);
-
+        
         if(w < opt){
             opt = w;
             opt_perm = perm.value;
@@ -35,17 +36,15 @@ onmessage = async e => {
                 value: opt_perm,
                 done: false
             });
-            await sleep(100);
         }
 
         perm = perm_gen.next();
+        perm_done += 1;
+
+        postMessage({ progress: perm_done / perm_amount });
     }
 
-    postMessage({
-        value: opt_perm,
-        done: true
-    });
-
-    console.log("Done");
+    postMessage({ progress: 1 });
+    postMessage({ value: opt_perm, done: true });
 
 }

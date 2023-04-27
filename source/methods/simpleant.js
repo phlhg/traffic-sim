@@ -11,17 +11,18 @@ export default class SimpleAnt extends Method {
 
         this.name = "SimpleAnts";
         this.description = "Simple ANT implementation";
+
+        this.done = false;
+
     }
 
 
-    async run() {
-        if(this.running) {
-            return; 
-        }
-        this.running = true;
+    async __run() {
 
         let cities = this.app.map.cities;
         let pheromone_map = {};
+
+        this.done = false;
 
         this.worker = new Worker('/js/workers/simpleant.js');
         this.degrade_worker = new Worker('/js/workers/simpleant_degrade.js');
@@ -37,7 +38,7 @@ export default class SimpleAnt extends Method {
             
 
             if(e.data.done) {
-                this.running = false;
+                this.done = true;
                 this.degrade_worker.postMessage({
                     state:0
                 });
@@ -57,9 +58,7 @@ export default class SimpleAnt extends Method {
             state: 1
         });
 
-        while(this.running) { 
-            await sleep(100); 
-        }
+        while(!this.done) { await sleep(100); }
 
         // TODO: make this.worker an array of workers
         this.worker.terminate();
@@ -69,11 +68,8 @@ export default class SimpleAnt extends Method {
         this.degrade_worker = null;
     }
 
-    async stop() {
-        if(!this.running) {
-            return; 
-        }
-        this.running = false;
+    async __stop() {
+        this.done = true;
     }
 
 }

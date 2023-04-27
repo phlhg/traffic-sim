@@ -95,6 +95,25 @@ body { overflow-x: hidden; }
     position: relative;
 }
 
+.controls .method .progress {
+    display: block;
+    position: relative;
+    width: 100%; height: 1px;
+    margin-top: 15px;
+    background: #1f1f1f;
+    --progress: 0%;
+}
+
+.controls .method .progress::after {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 0; left: 0;
+    height: 100%;
+    width: var(--progress);
+    background: #008106;
+}
+
 .controls .button {
     position: relative;
     display: inline-block;

@@ -18,6 +18,7 @@ export default class Controls {
 
     addMethod(c){
         let method = new c(this.app);
+        method.setup();
         this.methods.push(method);
         this.dom.content.append(method.getHTMLElement());
         return method;
