@@ -1,5 +1,6 @@
 import App from "./app"
 import Bruteforce from "./methods/bruteforce";
+import SimpleAnt from "./methods/simpleant";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -7,5 +8,5 @@ document.addEventListener('DOMContentLoaded', () => {
     app.run()
 
     app.controls.addMethod(Bruteforce);
-
+    app.controls.addMethod(SimpleAnt);
 })
