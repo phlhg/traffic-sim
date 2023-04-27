@@ -5,7 +5,7 @@ body { overflow-x: hidden; }
 .message,
 .map > .notice,
 .controls .clear-button,
-.controls .button
+.controls .button,
 .controls .button::after,
 .controls .button::before {
     transition: all 200ms ease-in-out;
