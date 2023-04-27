@@ -1,3 +1,5 @@
+import MethodWrapper from "./methods/wrapper";
+
 export default class Controls {
 
     constructor(app, wrapper){
@@ -16,16 +18,15 @@ export default class Controls {
 
     }
 
-    addMethod(c){
-        let method = new c(this.app);
-        method.setup();
+    addMethod(m){
+        let method = new MethodWrapper(this.app,m);
         this.methods.push(method);
         this.dom.content.append(method.getHTMLElement());
         return method;
     }
 
     stopMethods(){
-        return Promise.all(this.methods.map(m => m.stop()));
+        return Promise.all(this.methods.map(m => m.method.stop()));
     }
 
 }

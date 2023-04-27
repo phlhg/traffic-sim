@@ -1,5 +1,3 @@
-import { sleep } from "../utils";
-
 export default class Method {
 
     constructor(app){
@@ -9,7 +7,8 @@ export default class Method {
         this.name = "[Name]"
         this.description = "[Description]"
 
-        this.dom = {}
+        this.onupdate = () => {} 
+
         this.running = false;
 
         this.progress = 0;
@@ -17,31 +16,14 @@ export default class Method {
 
     }
 
-    /** Sets up the HTML element */
-    setup(){
-
-        this.dom.wrapper = document.createElement('div');
-        this.dom.wrapper.classList.add("method");
-
-        this.dom.wrapper.innerHTML = `
-            <strong>${this.name}</strong>
-            <span class="description">${this.description}</span>
-            <div class="progress" data-progress=""></div>
-            <div class="button">Run</div>
-        `;
-
-        this.dom.button = this.dom.wrapper.querySelector(".button");
-        this.dom.progress = this.dom.wrapper.querySelector(".progress");
-
-        this.dom.button.onclick = this.toggle.bind(this);
-
+    /** 
+     * Set the running status of the method
+     * @param {boolean} running - Indicates if the method is running
+     */
+    setRunning(running){
+        this.running = running;
+        this.onupdate();
     }
-
-    /** Returns the HTML element for the list */
-    getHTMLElement(){
-        return this.dom.wrapper;
-    }
-
 
     /**
      * Set the progress of the method
@@ -49,12 +31,12 @@ export default class Method {
      */
     setProgress(value){
         this.progress = value;
-        this.dom.progress.style.setProperty("--progress",`${value*100}%`);
+        this.onupdate();
     }
 
     /** Reset the progress of the method to zero */
     resetProgress(){
-        return this.setProgress(0);
+        this.setProgress(0);
     }
 
     /**
@@ -63,11 +45,13 @@ export default class Method {
      */
     addScore(value){
         this.scores.push([Date.now(), value]);
+        this.onupdate();
     }
 
     /** Reset the score history */
     resetScore(){
         this.scores = [];
+        this.onupdate();
     }
 
     /**
@@ -91,17 +75,14 @@ export default class Method {
 
         await this.app.controls.stopMethods();
 
-        this.running = true;
+        this.setRunning(true);
         this.setProgress(0);
         this.resetScore()
 
-        this.dom.button.classList.add("running");
-
         await this.__run();
 
-        this.dom.button.classList.remove("running");
         this.resetProgress();
-        this.running = false;
+        this.setRunning(false);
 
         return true;
     }
@@ -115,9 +96,8 @@ export default class Method {
 
         await this.__stop();
 
-        this.dom.button.classList.remove("running");
         this.resetProgress();
-        this.running = false;
+        this.setRunning(false);
 
         return true;
     }
