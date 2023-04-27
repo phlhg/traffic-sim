@@ -76,6 +76,8 @@ export default class Method {
     async run(){
         if(this.running){ return false; }
 
+        await this.app.controls.stopMethods();
+
         this.running = true;
         this.setProgress(0);
 

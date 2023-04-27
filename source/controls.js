@@ -24,4 +24,8 @@ export default class Controls {
         return method;
     }
 
+    stopMethods(){
+        return Promise.all(this.methods.map(m => m.stop()));
+    }
+
 }
