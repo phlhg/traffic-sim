@@ -1,3 +1,5 @@
+import Bruteforce from "./methods/bruteforce/bruteforce";
+import SliderMethodWrapper from "./methods/sliderwrapper";
 import MethodWrapper from "./methods/wrapper";
 
 export default class Controls {
@@ -20,7 +22,15 @@ export default class Controls {
     }
 
     addMethod(m){
-        let method = new MethodWrapper(this.app,m);
+        let method = m
+
+        if (m == Bruteforce) {
+            console.log("wtf")
+            method = new MethodWrapper(this.app,m);
+        }
+        else 
+            method = new SliderMethodWrapper(this.app,m);
+
         this.methods.push(method);
         this.dom.content.append(method.getHTMLElement());
         return method;

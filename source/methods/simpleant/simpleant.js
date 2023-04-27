@@ -11,7 +11,7 @@ export default class SimpleAnt extends Method {
 
         this.name = "SimpleAnts";
         this.description = "Simple ANT implementation";
-
+        this.NUM_ANTS = 0
         this.done = false;
 
     }
@@ -20,6 +20,7 @@ export default class SimpleAnt extends Method {
 
         let cities = Object.values(this.app.map.nodes).map(n => n.getObj());
         let pheromone_map = {};
+        let NUM_ANTS = this.NUM_ANTS
 
         this.done = false;
 
@@ -48,7 +49,8 @@ export default class SimpleAnt extends Method {
             // make copy of cities to prevent user writing into it during execution
             cities: [...cities], 
             // Shared pheromones
-            pheromones: pheromone_map
+            pheromones: pheromone_map,
+            NUM_ANTS: NUM_ANTS
         });
         // This is only needed once, to degrade the pheromones over time
         this.degrade_worker.postMessage({
@@ -68,6 +70,11 @@ export default class SimpleAnt extends Method {
 
     async __stop() {
         this.done = true;
+    }
+
+    slider(val) {
+        this.NUM_ANTS = val
+        console.log("val", val)
     }
 
 }

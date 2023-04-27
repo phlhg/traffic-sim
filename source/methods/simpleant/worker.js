@@ -1,7 +1,7 @@
 import { length } from "../../map/utils";
 
 // Number of ants per worker
-const NUM_ANTS = 10;
+let NUM_ANTS = 10;
 // Max time to run one worker in milliseconds
 const TIME_LIMIT = 10_000;
 
@@ -63,6 +63,8 @@ function getRandomUnvisited(cities, visited, pheromones) {
 export default function worker_simpleant(data) {
     let cities = data.cities;
     let pheromones = data.pheromones;
+    NUM_ANTS = data.NUM_ANTS
+    
 
     // create some ants, all starting at a random city
     let ants = [];
