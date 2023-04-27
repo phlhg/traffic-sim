@@ -1,22 +1,9 @@
-import { permute, sleep } from "../utils";
+import { calcWeight } from "../../utils";
 
 // Number of ants per worker
 const NUM_ANTS = 10;
 // Max time to run one worker in milliseconds
 const TIME_LIMIT = 10_000;
-
-function calcWeight(path) {
-    var weight = 0;
-    for(let i = 0; i < path.length; i++) {
-        let a = path[i];
-        let b = path[(i+1)%path.length]
-        weight += Math.sqrt(
-            Math.pow(a.x - b.x,2) + Math.pow(a.y - b.y,2)
-        );
-    }
-
-    return weight;
-}
 
 function getRandomUnvisited(cities, visited, pheromones) {
     // Make sure we have at least one unvisited city
@@ -73,9 +60,9 @@ function getRandomUnvisited(cities, visited, pheromones) {
     return undefined;
 }
 
-onmessage = async e => {
-    let cities = e.data.cities;
-    let pheromones = e.data.pheromones;
+export default function worker_simpleant(data) {
+    let cities = data.cities;
+    let pheromones = data.pheromones;
 
     // create some ants, all starting at a random city
     let ants = [];

@@ -1,6 +1,7 @@
-import { permute, sleep } from "../utils";
-import Message from "../utils/message";
-import Method from "./method"
+import { sleep } from "../../utils";
+import Message from "../../utils/message";
+import WorkerManager from "../../workers/manager";
+import Method from "../method"
 
 export default class Bruteforce extends Method {
 
@@ -12,7 +13,6 @@ export default class Bruteforce extends Method {
         this.description = "Naive approach to solving the Travelling Salesmen Problem by simply iterating over all possible paths and selecting the path with minimal cost."
 
         this.done = false;
-        this.worker = null;
 
     }
 
@@ -22,9 +22,9 @@ export default class Bruteforce extends Method {
 
         this.done = false;
 
-        this.worker = new Worker('/js/workers/bruteforce.js');
+        let worker = WorkerManager.get("bruteforce");
 
-        this.worker.onmessage = e => {
+        worker.onmessage = e => {
 
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
@@ -42,12 +42,11 @@ export default class Bruteforce extends Method {
             if(e.data.done){ this.done = true; }
         }
 
-        this.worker.postMessage({cities: [...this.app.map.cities]});
+        worker.postMessage({cities: [...this.app.map.cities]});
 
         while(!this.done){ await sleep(100); }
 
-        this.worker.terminate();
-        this.worker = null;
+        worker.terminate();
 
     }
 

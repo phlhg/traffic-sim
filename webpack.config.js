@@ -30,7 +30,5 @@ function output(entry, output){
 
 module.exports = [
   output('./source/index.js', 'main.js'),
-  output('./source/workers/bruteforce.js', 'workers/bruteforce.js'),
-  output('./source/workers/simpleant.js', 'workers/simpleant.js'),
-  output('./source/workers/simpleant_degrade.js', 'workers/simpleant_degrade.js'),
+  output('./source/workers/index.js', 'worker.js')
 ]

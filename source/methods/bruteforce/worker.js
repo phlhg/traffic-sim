@@ -1,29 +1,14 @@
-import { factorial, permute, sleep } from "../utils";
+import { calcWeight, factorial, permute } from "../../utils";
 
-function calcWeight(path){
-
-    var weight = 0;
-    for(let i = 0; i < path.length; i++){
-        let a = path[i];
-        let b = path[(i+1)%path.length]
-        weight += Math.sqrt(
-            Math.pow(a.x - b.x,2) + Math.pow(a.y - b.y,2)
-        );
-    }
-
-    return weight;
-
-}
-
-onmessage = async e => {
+export default function worker_bruteforce(data){
 
     var opt = Infinity;
     var opt_perm = [];
 
-    var perm_gen = permute(e.data.cities)
+    var perm_gen = permute(data.cities)
     var perm = perm_gen.next();
 
-    var perm_amount = factorial(e.data.cities.length);
+    var perm_amount = factorial(data.cities.length);
     var perm_done = 0;
 
     while(!perm.done){
@@ -47,4 +32,4 @@ onmessage = async e => {
     postMessage({ progress: 1 });
     postMessage({ value: opt_perm, done: true });
 
-}
+} 

@@ -1,6 +1,6 @@
-import { permute, sleep } from "../utils";
-import Message from "../utils/message";
-import Method from "./method"
+import { sleep } from "../../utils";
+import WorkerManager from "../../workers/manager";
+import Method from "../method"
 
 export default class SimpleAnt extends Method {
 
@@ -16,7 +16,6 @@ export default class SimpleAnt extends Method {
 
     }
 
-
     async __run() {
 
         let cities = this.app.map.cities;
@@ -24,8 +23,8 @@ export default class SimpleAnt extends Method {
 
         this.done = false;
 
-        this.worker = new Worker('/js/workers/simpleant.js');
-        this.degrade_worker = new Worker('/js/workers/simpleant_degrade.js');
+        this.worker = WorkerManager.get("simpleant");
+        this.degrade_worker = WorkerManager.get("simpleant-degrade");
 
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {

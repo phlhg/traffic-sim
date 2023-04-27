@@ -20,6 +20,22 @@ export function factorial(n){
     return n * factorial(n-1);
 }
 
+export function calcWeight(path){
+
+    var weight = 0;
+    for(let i = 0; i < path.length; i++){
+        let a = path[i];
+        let b = path[(i+1)%path.length]
+        weight += Math.sqrt(
+            Math.pow(a.x - b.x,2) + Math.pow(a.y - b.y,2)
+        );
+    }
+
+    return weight;
+
+}
+
+
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

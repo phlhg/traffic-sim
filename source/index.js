@@ -1,6 +1,6 @@
 import App from "./app"
-import Bruteforce from "./methods/bruteforce";
-import SimpleAnt from "./methods/simpleant";
+import Bruteforce from "./methods/bruteforce/bruteforce";
+import SimpleAnt from "./methods/simpleant/simpleant";
 
 document.addEventListener('DOMContentLoaded', () => {
 
