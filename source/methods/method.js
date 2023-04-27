@@ -9,11 +9,11 @@ export default class Method {
         this.name = "[Name]"
         this.description = "[Description]"
 
-        this.promise = null;
-
         this.dom = {}
         this.running = false;
+
         this.progress = 0;
+        this.scores = [];
 
     }
 
@@ -58,6 +58,19 @@ export default class Method {
     }
 
     /**
+     * Add a score to the history
+     * @param {number} value - The value to add as score
+     */
+    addScore(value){
+        this.scores.push([Date.now(), value]);
+    }
+
+    /** Reset the score history */
+    resetScore(){
+        this.scores = [];
+    }
+
+    /**
      * Internal function to run the method
      * @returns Returns a promise which resolves when the method stopped running.
      */
@@ -80,6 +93,7 @@ export default class Method {
 
         this.running = true;
         this.setProgress(0);
+        this.resetScore()
 
         this.dom.button.classList.add("running");
 
