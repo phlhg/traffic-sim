@@ -14,6 +14,9 @@ export default class Method {
         /** @property {string} description - Description of the method */
         this.description = "[Description]"
 
+        /** @property {object} settings -  */
+        this.settings = {}
+
     }
 
     /**
@@ -30,6 +33,25 @@ export default class Method {
      */
     addScore(value){
         this.wrapper.addScore(value);
+    }
+
+    /**
+     * Add a property to the settings
+     * @param {string} name Name of the property
+     * @param {Setting} type Class to initialize the property with
+     * @param {object} config Object containing additional information
+     */
+    addSetting(name, type, config){
+        this.settings[name] = new type(this.wrapper, config);
+    }
+
+    /**
+     * Get the value of a settings property
+     * @param {string} name Name of the property
+     * @returns {*} Returns the value of the property
+     */
+    getSetting(name){
+        return this.settings[name].value;
     }
 
     /**

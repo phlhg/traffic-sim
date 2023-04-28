@@ -1,10 +1,5 @@
 import { length } from "../../map/utils";
 
-// Number of ants per worker
-const NUM_ANTS = 10;
-// Max time to run one worker in milliseconds
-const TIME_LIMIT = 10_000;
-
 function getRandomUnvisited(cities, visited, pheromones) {
     // Make sure we have at least one unvisited city
     if(cities.length <= visited.length) {
@@ -61,8 +56,18 @@ function getRandomUnvisited(cities, visited, pheromones) {
 }
 
 export default function worker_simpleant(data) {
-    let cities = data.cities;
-    let pheromones = data.pheromones;
+    
+    const cities = data.cities;
+    // Max time to run one worker in milliseconds
+    const TIME_LIMIT = data.max_duration * 1000;
+    // Number of ants per worker
+    const NUM_ANTS = data.num_ants;
+    // Amount to subtract from pheromones per iteration
+    const SUBTRACT = 0.000001;
+
+    let pheromones = {};
+
+    let best_path = [];
 
     // create some ants, all starting at a random city
     let ants = [];
@@ -100,8 +105,9 @@ export default function worker_simpleant(data) {
                 }
 
                 if(i == 0) {
+                    best_path = path;
                     postMessage({
-                        value: path,
+                        value: best_path,
                         done: false
                     });
                 }
@@ -112,10 +118,15 @@ export default function worker_simpleant(data) {
                 ants[i].visited.push(next);
             }
         }
+
+        for(let i in pheromones) {
+            pheromones[i] = Math.max(0, pheromones[i] - SUBTRACT)
+        }
+
     }
 
     postMessage({
-        value: ants[0].visited,
+        value: best_path,
         done: true
     });
 }

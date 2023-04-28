@@ -29,16 +29,22 @@ export default class MethodWrapper {
         this.dom.wrapper.innerHTML = `
             <strong>${this.method.name}</strong>
             <span class="description">${this.method.description}</span>
+            <div class="settings"></div>
             <div class="progress" data-progress=""></div>
             <div class="time"></div>
             <div class="button">Run</div>
         `;
 
         this.dom.button = this.dom.wrapper.querySelector(".button");
+        this.dom.settings = this.dom.wrapper.querySelector(".settings");
         this.dom.progress = this.dom.wrapper.querySelector(".progress");
         this.dom.time = this.dom.wrapper.querySelector(".time");
 
         this.dom.button.onclick = () => { this.toggle(); }
+
+        Object.values(this.method.settings).forEach(s => {
+            this.dom.settings.appendChild(s.getHTMLElement());
+        })
 
     }
 
