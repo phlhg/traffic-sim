@@ -1,4 +1,4 @@
-import { calcWeight } from "../../utils";
+import { length } from "../../map/utils";
 
 // Number of ants per worker
 const NUM_ANTS = 10;
@@ -90,7 +90,7 @@ export default function worker_simpleant(data) {
                 let path = ants[i].visited;
                 last_complete = [...path];
                 // Calculate score => shorter path == better
-                let path_score = 1.0 / calcWeight(path);
+                let path_score = 1.0 / length(path);
                 // Update pheromone path
                 for(let j = 0; j < path.length; j++) {
                     let a = path[j];

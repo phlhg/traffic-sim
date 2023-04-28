@@ -1,5 +1,5 @@
 import Controls from "./controls";
-import Map from "./map";
+import Map from "./map/map";
 
 export default class App {
 

@@ -18,7 +18,7 @@ export default class Bruteforce extends Method {
 
     async __run(){
 
-        if(this.app.map.cities.length > 9){ Message.warning("Bruteforce with more than 9 cities will take some time"); }
+        if(Object.values(this.app.map.nodes).length > 9){ Message.warning("Bruteforce with more than 9 cities will take some time"); }
 
         this.done = false;
 
@@ -33,16 +33,17 @@ export default class Bruteforce extends Method {
 
             let perm = e.data.value;
 
-            this.app.map.roads = [];
+            this.app.map.resetEdges();
             for(let i = 0; i < perm.length; i++){
-                this.app.map.addRoad(perm[i],perm[(i+1)%perm.length])
+                this.app.map.setEdge(perm[i],perm[(i+1)%perm.length])
             }
-            this.app.map.draw();
 
             if(e.data.done){ this.done = true; }
         }
 
-        worker.postMessage({cities: [...this.app.map.cities]});
+        worker.postMessage({
+            cities: Object.values(this.app.map.nodes).map(n => n.getObj())
+        });
 
         while(!this.done){ await sleep(100); }
 

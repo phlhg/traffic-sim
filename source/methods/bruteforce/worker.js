@@ -1,18 +1,19 @@
-import { calcWeight, factorial, permute } from "../../utils";
+import { length } from "../../map/utils";
+import { factorial, permute } from "../../utils";
 
 export default function worker_bruteforce(data){
 
     var opt = Infinity;
     var opt_perm = [];
 
-    var perm_gen = permute(data.cities)
+    var perm_gen = permute(data.cities);
     var perm = perm_gen.next();
 
     var perm_amount = factorial(data.cities.length);
     var perm_done = 0;
 
     while(!perm.done){
-        var w = calcWeight(perm.value);
+        var w = length(perm.value);
         
         if(w < opt){
             opt = w;

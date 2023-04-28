@@ -18,7 +18,7 @@ export default class SimpleAnt extends Method {
 
     async __run() {
 
-        let cities = this.app.map.cities;
+        let cities = Object.values(this.app.map.nodes).map(n => n.getObj());
         let pheromone_map = {};
 
         this.done = false;
@@ -29,12 +29,11 @@ export default class SimpleAnt extends Method {
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
             let perm = e.data.value;
-            this.app.map.roads = [];
+
+            this.app.map.resetEdges();
             for(let i = 0; i < perm.length; i++) {
-                this.app.map.addRoad(perm[i],perm[(i+1)%perm.length])
+                this.app.map.setEdge(perm[i],perm[(i+1)%perm.length])
             }
-            this.app.map.draw();
-            
 
             if(e.data.done) {
                 this.done = true;
@@ -47,7 +46,7 @@ export default class SimpleAnt extends Method {
         // Start worker by posting the message with the cities
         this.worker.postMessage({
             // make copy of cities to prevent user writing into it during execution
-            cities: [...this.app.map.cities], 
+            cities: [...cities], 
             // Shared pheromones
             pheromones: pheromone_map
         });
