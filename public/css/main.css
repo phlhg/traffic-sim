@@ -95,6 +95,39 @@ body { overflow-x: hidden; }
     position: relative;
 }
 
+.controls .method .settings {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.controls .method .settings label {
+    display: block;
+    position: relative;
+    background: #111;
+    margin-top: 5px;
+}
+
+.controls .method .settings label > span {
+    display: block;
+    position: relative;
+    font-size: 0.8em;
+    padding: 2px 0;
+    opacity: 0.5;
+}
+
+.controls .method .settings label > input {
+    display: block;
+    position: relative;
+    width: 100%;
+    background: #111;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    outline: 0;
+    border: 1px solid #1f1f1f;
+}
+
 .controls .method .progress {
     display: block;
     position: relative;
@@ -112,6 +145,11 @@ body { overflow-x: hidden; }
     height: 100%;
     width: var(--progress);
     background: #008106;
+}
+
+.controls .method .time {
+    float: right;
+    margin-top: 15px;
 }
 
 .controls .button {

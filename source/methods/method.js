@@ -1,28 +1,22 @@
 export default class Method {
 
-    constructor(app){
+    constructor(wrapper){
 
-        this.app = app;
+        /** @property {MethodWrapper} wrapper - Reference to the method wrapper */
+        this.wrapper = wrapper;
 
+        /** @property {App} app - Reference to the App object */
+        this.app = this.wrapper.app;
+
+        /** @property {string} name - Name of the method */
         this.name = "[Name]"
+
+        /** @property {string} description - Description of the method */
         this.description = "[Description]"
 
-        this.onupdate = () => {} 
+        /** @property {object} settings -  */
+        this.settings = {}
 
-        this.running = false;
-
-        this.progress = 0;
-        this.scores = [];
-
-    }
-
-    /** 
-     * Set the running status of the method
-     * @param {boolean} running - Indicates if the method is running
-     */
-    setRunning(running){
-        this.running = running;
-        this.onupdate();
     }
 
     /**
@@ -30,13 +24,7 @@ export default class Method {
      * @param {*} value - A number between 0 and 1
      */
     setProgress(value){
-        this.progress = value;
-        this.onupdate();
-    }
-
-    /** Reset the progress of the method to zero */
-    resetProgress(){
-        this.setProgress(0);
+        this.wrapper.setProgress(value);
     }
 
     /**
@@ -44,71 +32,39 @@ export default class Method {
      * @param {number} value - The value to add as score
      */
     addScore(value){
-        this.scores.push([Date.now(), value]);
-        this.onupdate();
+        this.wrapper.addScore(value);
     }
 
-    /** Reset the score history */
-    resetScore(){
-        this.scores = [];
-        this.onupdate();
+    /**
+     * Add a property to the settings
+     * @param {string} name Name of the property
+     * @param {Setting} type Class to initialize the property with
+     * @param {object} config Object containing additional information
+     */
+    addSetting(name, type, config){
+        this.settings[name] = new type(this.wrapper, config);
+    }
+
+    /**
+     * Get the value of a settings property
+     * @param {string} name Name of the property
+     * @returns {*} Returns the value of the property
+     */
+    getSetting(name){
+        return this.settings[name].value;
     }
 
     /**
      * Internal function to run the method
      * @returns Returns a promise which resolves when the method stopped running.
      */
-    async __run(){ }
+    async run(){ }
 
     /**
      * Internal function to stop the method
      * @returns Returns a promise which resolves when the method stopped running.
      */
-    async __stop(){ }
-
-    /** 
-     * Runs the method
-     * @returns Returns a promise containing a bool with true for success and false for failure
-     */
-    async run(){
-        if(this.running){ return false; }
-
-        await this.app.controls.stopMethods();
-
-        this.setRunning(true);
-        this.setProgress(0);
-        this.resetScore()
-
-        await this.__run();
-
-        this.resetProgress();
-        this.setRunning(false);
-
-        return true;
-    }
-
-    /** 
-     * Stops the method
-     * @returns Returns a promise containing a bool with true for success and false for failure
-     */
-    async stop(){
-        if(!this.running){ return false; }
-
-        await this.__stop();
-
-        this.resetProgress();
-        this.setRunning(false);
-
-        return true;
-    }
-
-    /** 
-     * Toggles the method between running and stopped 
-     * @returns Returns a promise containing a bool with true for success and false for failure.
-    */
-    async toggle(){
-        return (this.running ? await this.stop() : await this.run());
-    }
+    async stop(){ }
 
 }
 
