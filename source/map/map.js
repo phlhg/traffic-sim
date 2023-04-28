@@ -19,7 +19,8 @@ export default class Map {
         this.nodes = {};
         this.edges = [];
 
-        this.size = 1200;
+        this.size = 0;
+        this.scale = 1;
         this.pos = {}
         this.pos.width = this.size;
         this.pos.height = this.size;
@@ -40,6 +41,10 @@ export default class Map {
             this.addNode(coords.x, coords.y);
         })
 
+        this.dom.svg.addEventListener("wheel", e => {
+            this.zoom(e.deltaY < 0 ? -1 : 1);
+        });
+
     }
 
     /** Clears & resets the map */
@@ -48,6 +53,8 @@ export default class Map {
         this.edges = []
         this.dom.svg_nodes.innerHTML = '';
         this.dom.svg_edges.innerHTML = '';
+        this.scale = 1;
+        this.adjustSize();
         this.dom.notice.classList.add("active");
     }
 
@@ -55,7 +62,7 @@ export default class Map {
     adjustSize(){
         let rect = this.dom.svg.getBoundingClientRect();
 
-        this.size = Math.min(rect.width, rect.height) * (1200 / Math.pow(rect.width * rect.height,0.5));
+        this.size = Math.min(rect.width, rect.height) * (1200 / Math.pow(rect.width * rect.height,0.5)) * this.scale;
 
         if(rect.width > rect.height){
             this.pos.width = this.size * (rect.width / rect.height);
@@ -69,6 +76,14 @@ export default class Map {
         this.pos.top = - this.pos.height / 2
 
         this.dom.svg.setAttribute('viewBox', `${this.pos.left} ${this.pos.top} ${this.pos.width} ${this.pos.height}`)
+    }
+
+    zoom(direction){
+        if(Object.values(this.nodes).length <= 0){ return; }
+        this.scale = this.scale * (direction < 0 ? 0.8 : 1.25);
+        this.scale = Math.max(0.2, this.scale);
+        this.scale = Math.min(2, this.scale);
+        this.adjustSize();
     }
 
     /**
