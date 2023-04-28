@@ -16,7 +16,7 @@ export default class SimpleAnt extends Method {
 
     }
 
-    async __run() {
+    async run() {
 
         let cities = Object.values(this.app.map.nodes).map(n => n.getObj());
         let pheromone_map = {};
@@ -66,7 +66,7 @@ export default class SimpleAnt extends Method {
         this.degrade_worker = null;
     }
 
-    async __stop() {
+    async stop() {
         this.done = true;
     }
 

@@ -114,6 +114,11 @@ body { overflow-x: hidden; }
     background: #008106;
 }
 
+.controls .method .time {
+    float: right;
+    margin-top: 15px;
+}
+
 .controls .button {
     position: relative;
     display: inline-block;

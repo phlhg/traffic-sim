@@ -16,7 +16,7 @@ export default class Bruteforce extends Method {
 
     }
 
-    async __run(){
+    async run(){
 
         if(Object.values(this.app.map.nodes).length > 9){ Message.warning("Bruteforce with more than 9 cities will take some time"); }
 
@@ -51,7 +51,7 @@ export default class Bruteforce extends Method {
 
     }
 
-    async __stop(){
+    async stop(){
         this.done = true;
     }
 
