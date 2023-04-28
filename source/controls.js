@@ -12,7 +12,8 @@ export default class Controls {
         this.dom.content = wrapper.querySelector('.content');
         this.dom.clear = wrapper.querySelector('.clear-button');
 
-        this.dom.clear.addEventListener("click", e => {
+        this.dom.clear.addEventListener("click", async e => {
+            await this.stopMethods();
             this.app.map.clear();
         })
 
