@@ -120,7 +120,9 @@ export default function worker_simpleant(data) {
         }
 
         for(let i in pheromones) {
-            pheromones[i] = Math.max(0, pheromones[i] - SUBTRACT)
+            if(pheromones[i] >= SUBTRACT){
+                pheromones[i] -= SUBTRACT;
+            }
         }
 
     }
