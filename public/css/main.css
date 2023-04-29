@@ -82,7 +82,7 @@ body { overflow-x: hidden; }
     position: relative;
     padding: 20px;
     border-bottom: 1px solid #1f1f1f;
-    line-height: 25px;
+    line-height: 1.5rem;
 }
 
 .controls .method strong:first-of-type {
@@ -111,7 +111,7 @@ body { overflow-x: hidden; }
 .controls .method .settings label > span {
     display: block;
     position: relative;
-    font-size: 0.8em;
+    font-size: 0.8rem;
     padding: 2px 0;
     opacity: 0.5;
 }
@@ -127,6 +127,12 @@ body { overflow-x: hidden; }
     outline: 0;
     border: 1px solid #1f1f1f;
 }
+
+.controls .method .settings label > input[type='range']{ border: none; }
+
+.controls .method .settings label.checkbox { cursor: pointer; margin-top: 10px; }
+.controls .method .settings label.checkbox > span { padding: 0 0 0 25px; line-height: 1.3rem; }
+.controls .method .settings label.checkbox > input { position: absolute; width: 20px; height: 1.3rem; top: 0; left: 0; width: auto; max-width: 1.3rem; }
 
 .controls .method .progress {
     display: block;

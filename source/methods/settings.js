@@ -47,3 +47,48 @@ export class NumberSetting extends Setting {
     }
 
 }
+
+export class SliderSetting extends NumberSetting {
+
+
+    setup(){
+
+        this.dom.wrapper.innerHTML = `<span></span><input type="range" />`
+
+        this.conf.formatter = this.conf.formatter ?? (v => { return v });
+
+        this.dom.name = this.dom.wrapper.querySelector("span");
+        this.dom.name.innerHTML = `${this.conf.name}: ${this.conf.formatter(this.value)}`
+
+        this.dom.input = this.dom.wrapper.querySelector("input");
+        this.dom.input.min = this.conf.min;
+        this.dom.input.max = this.conf.max;
+        this.dom.input.step = this.conf.step;
+        this.dom.input.value = this.value; 
+
+        this.dom.input.onchange = e => {
+            let v = Math.round(this.dom.input.value / this.conf.step) * this.conf.step;
+            this.value = Math.min(this.conf.max, Math.max(this.conf.min, v.toFixed(8)));
+            this.dom.input.value = this.value;
+            this.dom.name.innerHTML = `${this.conf.name}: ${this.conf.formatter(this.value)}`
+        }
+    }
+
+}
+
+export class BooleanSetting extends Setting {
+
+    setup(){
+
+        this.dom.wrapper.innerHTML = `<input type="checkbox" /><span>${this.conf.name}</span>`
+        this.dom.wrapper.classList.add("checkbox");
+
+        this.dom.input = this.dom.wrapper.querySelector("input");
+        this.dom.input.checked = this.checked; 
+
+        this.dom.input.onchange = e => {
+            this.value = this.dom.input.checked;
+        }
+
+    }
+}

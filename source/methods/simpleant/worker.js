@@ -57,13 +57,13 @@ function getRandomUnvisited(cities, visited, pheromones) {
 
 export default function worker_simpleant(data) {
     
-    const cities = data.cities;
+    var cities = data.cities;
     // Max time to run one worker in milliseconds
-    const TIME_LIMIT = data.max_duration * 1000;
+    var TIME_LIMIT = data.max_duration * 1000;
     // Number of ants per worker
-    const NUM_ANTS = data.num_ants;
+    var NUM_ANTS = data.num_ants;
     // Amount to subtract from pheromones per iteration
-    const SUBTRACT = 0.000001;
+    var SUBTRACT = 0.000001;
 
     let pheromones = {};
 

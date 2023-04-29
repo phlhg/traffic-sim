@@ -1,7 +1,7 @@
 import { sleep } from "../../utils";
 import WorkerManager from "../../workers/manager";
 import Method from "../method"
-import { NumberSetting } from "../settings";
+import { NumberSetting, SliderSetting } from "../settings";
 
 export default class SimpleAnt extends Method {
 
@@ -13,14 +13,15 @@ export default class SimpleAnt extends Method {
         this.name = "SimpleAnts";
         this.description = "Simple ANT implementation";
 
-        this.addSetting("num_ants", NumberSetting, { 
-            name: "Number of Ants",
+        this.addSetting("num_ants", SliderSetting, { 
+            name: "Ants",
             min: 1, max: 100, value: 10
         });
 
-        this.addSetting("max_duration", NumberSetting, {
-            name: "Time limit in seconds",
-            min: 1, max: 60, value: 10, step: 1
+        this.addSetting("max_duration", SliderSetting, {
+            name: "Time limit",
+            min: 1, max: 60, value: 10, step: 1,
+            formatter: v => { return `${v}s`}
         })
 
         this.done = false;
