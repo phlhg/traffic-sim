@@ -63,7 +63,7 @@ export default function worker_simpleant(data) {
     // Number of ants per worker
     var NUM_ANTS = data.num_ants;
     // Amount to subtract from pheromones per iteration
-    var SUBTRACT = 0.000001;
+    var SUBTRACT = data.amount_subtract;
 
     let pheromones = {};
 

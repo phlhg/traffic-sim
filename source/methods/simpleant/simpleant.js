@@ -1,7 +1,7 @@
 import { sleep } from "../../utils";
 import WorkerManager from "../../workers/manager";
 import Method from "../method"
-import { NumberSetting, SliderSetting } from "../settings";
+import { SliderSetting } from "../settings";
 
 export default class SimpleAnt extends Method {
 
@@ -22,6 +22,12 @@ export default class SimpleAnt extends Method {
             name: "Time limit",
             min: 1, max: 60, value: 10, step: 1,
             formatter: v => { return `${v}s`}
+        })
+
+        this.addSetting("amount_subtract", SliderSetting, {
+            name: "Pheromone degradation",
+            min: -20, max: 3, value: -7, step: 1,
+            formatter: v => { return v == 0 ? `0` : `10<sup>${v}</sup>`}
         })
 
         this.done = false;
@@ -53,7 +59,8 @@ export default class SimpleAnt extends Method {
             // make copy of cities to prevent user writing into it during execution
             cities: [...cities],
             num_ants: this.getSetting("num_ants"),
-            max_duration: this.getSetting("max_duration")
+            max_duration: this.getSetting("max_duration"),
+            amount_subtract: Math.pow(10,this.getSetting("amount_subtract"))
         });
 
         while(!this.done) { await sleep(100); }
