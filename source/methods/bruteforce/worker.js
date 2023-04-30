@@ -20,6 +20,7 @@ export default function worker_bruteforce(data){
             opt_perm = perm.value;
             postMessage({
                 value: opt_perm,
+                score: opt,
                 done: false
             });
         }
@@ -31,6 +32,6 @@ export default function worker_bruteforce(data){
     }
 
     postMessage({ progress: 1 });
-    postMessage({ value: opt_perm, done: true });
+    postMessage({ value: opt_perm, score: opt, done: true });
 
 } 

@@ -68,6 +68,7 @@ export default function worker_simpleant(data) {
     let pheromones = {};
 
     let best_path = [];
+    let best_score = Infinity;
 
     // create some ants, all starting at a random city
     let ants = [];
@@ -95,6 +96,7 @@ export default function worker_simpleant(data) {
                 let path = ants[i].visited;
                 last_complete = [...path];
                 // Calculate score => shorter path == better
+                let path_len = length(path);
                 let path_score = 1.0 / length(path);
                 // Update pheromone path
                 for(let j = 0; j < path.length; j++) {
@@ -104,10 +106,12 @@ export default function worker_simpleant(data) {
                     pheromones[[a.id, b.id]] = (pheromones[[a.id, b.id]] ?? 0) + path_score;
                 }
 
-                if(i == 0) {
+                if(i == 0 && path_len < best_score) {
                     best_path = path;
+                    best_score = path_len
                     postMessage({
                         value: best_path,
+                        score: best_score,
                         done: false
                     });
                 }
@@ -129,6 +133,7 @@ export default function worker_simpleant(data) {
 
     postMessage({
         value: best_path,
+        score: best_score,
         done: true
     });
 }

@@ -38,6 +38,8 @@ export default class Bruteforce extends Method {
                 this.app.map.setEdge(perm[i],perm[(i+1)%perm.length])
             }
 
+            this.addScore(e.data.score);
+
             if(e.data.done){ this.done = true; }
         }
 
