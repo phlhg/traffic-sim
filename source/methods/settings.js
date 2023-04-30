@@ -72,6 +72,8 @@ export class SliderSetting extends NumberSetting {
             this.dom.input.value = this.value;
             this.dom.name.innerHTML = `${this.conf.name}: ${this.conf.formatter(this.value)}`
         }
+
+        this.dom.input.oninput = this.dom.input.onchange;
     }
 
 }
