@@ -129,7 +129,11 @@ export default function worker_simpleant(data) {
             }
         }
 
+        postMessage({ progress: (cur_time - start_time) / TIME_LIMIT });
+
     }
+
+    postMessage({ progress: 1 });
 
     postMessage({
         value: best_path,

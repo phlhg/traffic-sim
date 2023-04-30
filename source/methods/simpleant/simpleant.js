@@ -44,6 +44,12 @@ export default class SimpleAnt extends Method {
 
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
+
+            if(e.data.hasOwnProperty("progress")){
+                this.setProgress(e.data.progress);
+                return;
+            }
+
             let perm = e.data.value;
 
             this.app.map.resetEdges();
