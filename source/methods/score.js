@@ -45,8 +45,6 @@ export default class Score {
             return; 
         }
 
-        console.log(this.scores);
-
         this.dom.svg.classList.remove("empty");
         
         let max = Math.max(...this.scores.map(s => { return s.value }))
