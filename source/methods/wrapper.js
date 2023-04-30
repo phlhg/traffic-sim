@@ -1,3 +1,4 @@
+import Message from "../utils/message";
 import Score from "./score";
 
 export default class MethodWrapper {
@@ -101,6 +102,11 @@ export default class MethodWrapper {
         if(this.running){ return false; }
 
         await this.app.controls.stopMethods();
+
+        if(Object.values(this.app.map.nodes).length < 2){
+            Message.info("Please add at least two cities before running an optimizer.", 2000);
+            return false;
+        }
 
         this.running = true;
         this.progress = 0;
