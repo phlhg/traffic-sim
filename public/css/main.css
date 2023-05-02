@@ -4,7 +4,7 @@ body { overflow-x: hidden; }
 
 .message,
 .map > .notice,
-.controls .clear-button,
+.map > .actions > span,
 .controls .button,
 .controls .button::after,
 .controls .button::before {
@@ -44,6 +44,32 @@ body { overflow-x: hidden; }
     height: 100%;
     z-index: 1;
     cursor: pointer;
+}
+
+.map > .actions {
+    position: absolute;
+    display: inline-block;
+    top: 20px; right: 20px;
+    z-index: 200;
+}
+
+.map > .actions > span {
+    position: relative;
+    display: inline-block;
+    padding: 8px;
+    margin-left: 5px;
+    border: 1px solid #1f1f1f;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+}
+
+.map > .actions > span:hover {
+    background: #1f1f1f;
+}
+
+.map > .actions > span.clear:hover {
+    background: #c00;
 }
 
 .controls {
@@ -219,33 +245,6 @@ body { overflow-x: hidden; }
 @keyframes rotation {
     0% { transform: rotateZ(0deg); }
     100% { transform: rotateZ(360deg); }
-}
-
-.controls .clear-button {
-    position: absolute;
-    display: block;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #1f1f1f;
-    margin: 0;
-    padding: 15px 20px;
-    text-align: left;
-    cursor: pointer;
-}
-
-.controls .clear-button::after {
-    content: 'delete';
-    font-family: 'Material Symbols Outlined';
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    line-height: 20px;
-    font-size: 1.2em;
-}
-
-.controls .clear-button:hover {
-    background: #c00;
 }
 
 .message {
