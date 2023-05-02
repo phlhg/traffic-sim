@@ -15,18 +15,18 @@ export default class SimpleAnt extends Method {
 
         this.addSetting("num_ants", SliderSetting, { 
             name: "Ants",
-            min: 1, max: 100, value: 10
+            min: 1, max: 250, value: 10
         });
 
         this.addSetting("max_duration", SliderSetting, {
             name: "Time limit",
-            min: 1, max: 60, value: 10, step: 1,
-            formatter: v => { return `${v}s`}
+            min: 0.5, max: 60, value: 10, step: 0.1,
+            formatter: v => { return `${v.toFixed(1)}s`}
         })
 
         this.addSetting("amount_subtract", SliderSetting, {
             name: "Pheromone degradation",
-            min: -20, max: 3, value: -7, step: 1,
+            min: -20, max: 3, value: -7, step: 0.1,
             formatter: v => { return v == 0 ? `1` : `10<sup>${v}</sup>`}
         })
 
