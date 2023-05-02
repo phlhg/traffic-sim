@@ -32,10 +32,9 @@ export default class Bruteforce extends Method {
             }
 
             let perm = e.data.value;
-
-            this.app.map.resetEdges();
+            this.app.map.resetOptimum();
             for(let i = 0; i < perm.length; i++){
-                this.app.map.setEdge(perm[i],perm[(i+1)%perm.length])
+                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).setActive()
             }
 
             this.addScore(e.data.score);

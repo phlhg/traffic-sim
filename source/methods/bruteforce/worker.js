@@ -28,7 +28,9 @@ export default function worker_bruteforce(data){
         perm = perm_gen.next();
         perm_done += 1;
 
-        postMessage({ progress: perm_done / perm_amount });
+        if(perm_done % 100 == 1){
+            postMessage({ progress: perm_done / perm_amount });
+        }
     }
 
     postMessage({ progress: 1 });

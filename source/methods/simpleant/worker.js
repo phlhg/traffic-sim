@@ -82,6 +82,7 @@ export default function worker_simpleant(data) {
     let last_complete = [];
     // Get the time in milliseconds
     let start_time = new Date().getTime();
+    let iteration = 0;
     while(true) {
         // Check that we still have time to do another round
         let cur_time = new Date().getTime();
@@ -129,11 +130,21 @@ export default function worker_simpleant(data) {
             }
         }
 
-        postMessage({ progress: (cur_time - start_time) / TIME_LIMIT });
+        iteration += 1;
+
+        if(iteration % 100 == 1){
+            postMessage({ 
+                progress: (cur_time - start_time) / TIME_LIMIT,
+                pheromones: pheromones 
+            });
+        }
 
     }
 
-    postMessage({ progress: 1 });
+    postMessage({ 
+        progress: 1,
+        pheromones: pheromones 
+    });
 
     postMessage({
         value: best_path,

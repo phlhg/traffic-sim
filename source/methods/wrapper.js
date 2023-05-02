@@ -110,6 +110,7 @@ export default class MethodWrapper {
 
         this.running = true;
         this.progress = 0;
+        this.app.map.reset();
         this.score.reset();
 
         this.timeStart = Date.now();

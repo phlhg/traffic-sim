@@ -16,6 +16,9 @@ export default class Edge {
         /** @property {number} weight - The weight between 0 and 1 of the edge */
         this.weight = 0;
 
+        /** @property {boolean} active - Indicates if the edge is part of the optimum */
+        this.active = false;
+
         this.dom = {}
         this.setup();
 
@@ -42,17 +45,29 @@ export default class Edge {
     /**
      * Set the weight of the edge.
      * @param {number} w Weight between 0 and 1
-     * @returns {boolean} Returns true on success, false otherwise
+     * @returns {Edge} Returns the edge for chaining
      */
     setWeight(w){
         this.weight = w;
         this.update();
-        return true;
+        return this;
+    }
+
+    /**
+     * Sets the membership of the edge to the optimum
+     * @param {boolean} state True if part of the optimum, false otherwise (Default: true)
+     * @returns {Edge} Returns the edge for chaining
+     */
+    setActive(state){
+        this.active = state ?? true;
+        this.update();
+        return this;
     }
 
     /** Updates the SVG element */
     update(){
-        this.dom.line.style.stroke = `rgba(255,255,255,${255*this.weight})`;
+        this.dom.line.style.opacity = this.active ? 1 : this.weight;
+        this.dom.line.style.strokeWidth = this.active ? 4 : 2;
     }
 
 }

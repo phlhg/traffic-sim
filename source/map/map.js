@@ -124,12 +124,35 @@ export default class Map {
 
         return node;
     }
-    
-    /** Resets the weight of all edges to zero */
-    resetEdges(){
+
+    /** Resets the weight of all edges to 0 */
+    resetWeights(){ this.forEdges(e => { e.setWeight(0); }) }
+
+    /** Removes all edges from the optimum */
+    resetOptimum(){ this.forEdges(e => { e.setActive(false); }) }
+
+    /** Resets the map without clearing it's contents */
+    reset(){
+        this.resetOptimum();
+        this.resetWeights();
+    }
+
+    /**
+     * Runs a function over all edges
+     * @param {Function} fn - Function, which takes an edge as an argument
+     */
+    forEdges(fn){
         Object.values(this.edges).forEach(list => {
-            Object.values(list).forEach(e => { e.setWeight(0); })
+            Object.values(list).forEach(e => { fn(e); })
         })
+    }
+
+    /**
+     * Runs a function over all nodes
+     * @param {Function} fn - Function, which takes a node as an argument
+     */
+    forNodes(fn){
+        Object.values(this.nodes).forEach(n => { fn(n); })
     }
 
     /**
@@ -146,31 +169,6 @@ export default class Map {
             return null; 
         }
         return this.edges[c.id][d.id];
-    }
-    
-    /**
-     * Set the weight of an edge between two nodes
-     * @param {Node} a The first node
-     * @param {Node} b The second node
-     * @param {number} [w=1] A weight between 0 and 1
-     * @return {boolean} Returns true on success, false otherwise
-     */
-    setEdge(a,b,w){
-        let e = this.getEdge(a,b);
-        if(e == null){ return false; }
-        return e.setWeight(w ?? 1);
-    }
-
-    /**
-     * Reset the weight of an edge between two nodes to zero
-     * @param {Node} a The first node
-     * @param {Node} b The second node
-     * @return {boolean} Returns true on success, false otherwise
-     */
-    unsetEdge(a,b){
-        let e = this.getEdge(a,b);
-        if(e == null){ return false; }
-        return e.setWeight(0);
     }
 
 }
