@@ -57,17 +57,18 @@ function getRandomUnvisited(cities, visited, pheromones) {
 
 export default function worker_simpleant(data) {
     
-    const cities = data.cities;
+    var cities = data.cities;
     // Max time to run one worker in milliseconds
-    const TIME_LIMIT = data.max_duration * 1000;
+    var TIME_LIMIT = data.max_duration * 1000;
     // Number of ants per worker
-    const NUM_ANTS = data.num_ants;
+    var NUM_ANTS = data.num_ants;
     // Amount to subtract from pheromones per iteration
-    const SUBTRACT = 0.000001;
+    var SUBTRACT = data.amount_subtract;
 
     let pheromones = {};
 
     let best_path = [];
+    let best_score = Infinity;
 
     // create some ants, all starting at a random city
     let ants = [];
@@ -81,6 +82,7 @@ export default function worker_simpleant(data) {
     let last_complete = [];
     // Get the time in milliseconds
     let start_time = new Date().getTime();
+    let iteration = 0;
     while(true) {
         // Check that we still have time to do another round
         let cur_time = new Date().getTime();
@@ -95,6 +97,7 @@ export default function worker_simpleant(data) {
                 let path = ants[i].visited;
                 last_complete = [...path];
                 // Calculate score => shorter path == better
+                let path_len = length(path);
                 let path_score = 1.0 / length(path);
                 // Update pheromone path
                 for(let j = 0; j < path.length; j++) {
@@ -104,10 +107,12 @@ export default function worker_simpleant(data) {
                     pheromones[[a.id, b.id]] = (pheromones[[a.id, b.id]] ?? 0) + path_score;
                 }
 
-                if(i == 0) {
+                if(i == 0 && path_len < best_score) {
                     best_path = path;
+                    best_score = path_len
                     postMessage({
                         value: best_path,
+                        score: best_score,
                         done: false
                     });
                 }
@@ -120,13 +125,30 @@ export default function worker_simpleant(data) {
         }
 
         for(let i in pheromones) {
-            pheromones[i] = Math.max(0, pheromones[i] - SUBTRACT)
+            if(pheromones[i] >= SUBTRACT){
+                pheromones[i] -= SUBTRACT;
+            }
+        }
+
+        iteration += 1;
+
+        if(iteration % 100 == 1){
+            postMessage({ 
+                progress: (cur_time - start_time) / TIME_LIMIT,
+                pheromones: pheromones 
+            });
         }
 
     }
 
+    postMessage({ 
+        progress: 1,
+        pheromones: pheromones 
+    });
+
     postMessage({
         value: best_path,
+        score: best_score,
         done: true
     });
 }

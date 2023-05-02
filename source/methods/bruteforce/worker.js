@@ -20,6 +20,7 @@ export default function worker_bruteforce(data){
             opt_perm = perm.value;
             postMessage({
                 value: opt_perm,
+                score: opt,
                 done: false
             });
         }
@@ -27,10 +28,12 @@ export default function worker_bruteforce(data){
         perm = perm_gen.next();
         perm_done += 1;
 
-        postMessage({ progress: perm_done / perm_amount });
+        if(perm_done % 100 == 1){
+            postMessage({ progress: perm_done / perm_amount });
+        }
     }
 
     postMessage({ progress: 1 });
-    postMessage({ value: opt_perm, done: true });
+    postMessage({ value: opt_perm, score: opt, done: true });
 
 } 

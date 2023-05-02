@@ -11,14 +11,13 @@ export default class Controls {
 
         this.dom = {}
         this.dom.wrapper = wrapper;
-        this.dom.content = wrapper.querySelector('.content');
-        this.dom.clear = wrapper.querySelector('.clear-button');
 
-        this.dom.clear.addEventListener("click", async e => {
-            await this.stopMethods();
-            this.app.map.clear();
-        })
+        this.dom.wrapper.innerHTML = `
+            <header><strong>ACO</strong> Traffic Optimizer</header>
+            <div class="content"></div>
+        `
 
+        this.dom.content = this.dom.wrapper.querySelector('.content');
     }
 
     addMethod(m){

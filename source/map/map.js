@@ -8,13 +8,27 @@ export default class Map {
 
         this.dom = {}
         this.dom.wrapper = wrapper;
-        this.dom.svg = wrapper.querySelector("svg");
-        this.dom.notice = wrapper.querySelector(".notice");
-        this.dom.notice.classList.add("active");
 
-        this.dom.svg.innerHTML = `<g class="edges"></g><g class="nodes"></g>`
+        this.dom.wrapper.innerHTML = `
+            <div class="actions">
+                <span class="material-symbols-outlined random" title="Add new cities randomly" >shuffle</span>
+                <span class="material-symbols-outlined clear" title="Clear map and remove all cities" >delete</span>
+            </div>
+            <svg viewBox="0 0 1000 1000" >
+                <g class="edges"></g>
+                <g class="nodes"></g>
+            </svg>
+            <span class="notice active">Click to add cities</span>
+        `
+
+        this.dom.svg = this.dom.wrapper.querySelector("svg");
+        this.dom.notice = this.dom.wrapper.querySelector(".notice");
         this.dom.svg_nodes = this.dom.svg.querySelector(".nodes");
         this.dom.svg_edges = this.dom.svg.querySelector(".edges");
+
+        this.dom.actions = this.dom.wrapper.querySelector(".actions");
+        this.dom.action_random = this.dom.actions.querySelector(".random");
+        this.dom.action_clear = this.dom.actions.querySelector(".clear");
 
         this.nodes = {};
         this.edges = [];
@@ -39,11 +53,24 @@ export default class Map {
         this.dom.svg.addEventListener("click", (e) => {
             let coords = this.translateCoordinates(e.clientX, e.clientY);
             this.addNode(coords.x, coords.y);
+            e.preventDefault();
         })
 
         this.dom.svg.addEventListener("wheel", e => {
             this.zoom(e.deltaY < 0 ? -1 : 1);
+            e.preventDefault();
         });
+
+        this.dom.action_clear.addEventListener("click", async e => {
+            await this.app.controls.stopMethods();
+            this.clear()
+            e.preventDefault();
+        })
+
+        this.dom.action_random.addEventListener("click", async e => {
+            this.addRandom(3);
+            e.preventDefault();
+        })
 
     }
 
@@ -56,6 +83,12 @@ export default class Map {
         this.scale = 1;
         this.adjustSize();
         this.dom.notice.classList.add("active");
+    }
+
+    addRandom(n){
+        for(let i = 0; i < n; i++){
+            this.addNode(Math.random() * 1000 - 500, Math.random() * 1000 - 500)
+        }
     }
 
     /** Adjusts the map viewport to the current window size */
@@ -124,12 +157,35 @@ export default class Map {
 
         return node;
     }
-    
-    /** Resets the weight of all edges to zero */
-    resetEdges(){
+
+    /** Resets the weight of all edges to 0 */
+    resetWeights(){ this.forEdges(e => { e.setWeight(0); }) }
+
+    /** Removes all edges from the optimum */
+    resetOptimum(){ this.forEdges(e => { e.setActive(false); }) }
+
+    /** Resets the map without clearing it's contents */
+    reset(){
+        this.resetOptimum();
+        this.resetWeights();
+    }
+
+    /**
+     * Runs a function over all edges
+     * @param {Function} fn - Function, which takes an edge as an argument
+     */
+    forEdges(fn){
         Object.values(this.edges).forEach(list => {
-            Object.values(list).forEach(e => { e.setWeight(0); })
+            Object.values(list).forEach(e => { fn(e); })
         })
+    }
+
+    /**
+     * Runs a function over all nodes
+     * @param {Function} fn - Function, which takes a node as an argument
+     */
+    forNodes(fn){
+        Object.values(this.nodes).forEach(n => { fn(n); })
     }
 
     /**
@@ -146,31 +202,6 @@ export default class Map {
             return null; 
         }
         return this.edges[c.id][d.id];
-    }
-    
-    /**
-     * Set the weight of an edge between two nodes
-     * @param {Node} a The first node
-     * @param {Node} b The second node
-     * @param {number} [w=1] A weight between 0 and 1
-     * @return {boolean} Returns true on success, false otherwise
-     */
-    setEdge(a,b,w){
-        let e = this.getEdge(a,b);
-        if(e == null){ return false; }
-        return e.setWeight(w ?? 1);
-    }
-
-    /**
-     * Reset the weight of an edge between two nodes to zero
-     * @param {Node} a The first node
-     * @param {Node} b The second node
-     * @return {boolean} Returns true on success, false otherwise
-     */
-    unsetEdge(a,b){
-        let e = this.getEdge(a,b);
-        if(e == null){ return false; }
-        return e.setWeight(0);
     }
 
 }

@@ -1,3 +1,6 @@
+import Message from "../utils/message";
+import Score from "./score";
+
 export default class MethodWrapper {
 
     constructor(app,method){
@@ -12,7 +15,7 @@ export default class MethodWrapper {
         this.running = false;
         this.progress = 0;
 
-        this.scores = [];
+        this.score = new Score(this);
 
         this.timeStart = -1;
         this.timeEnd = -1;
@@ -30,13 +33,15 @@ export default class MethodWrapper {
             <strong>${this.method.name}</strong>
             <span class="description">${this.method.description}</span>
             <div class="settings"></div>
+            <span class="score"></span>
             <div class="progress" data-progress=""></div>
-            <div class="time"></div>
             <div class="button">Run</div>
+            <div class="time"></div>
         `;
 
         this.dom.button = this.dom.wrapper.querySelector(".button");
         this.dom.settings = this.dom.wrapper.querySelector(".settings");
+        this.dom.score = this.dom.wrapper.querySelector(".score");
         this.dom.progress = this.dom.wrapper.querySelector(".progress");
         this.dom.time = this.dom.wrapper.querySelector(".time");
 
@@ -45,6 +50,8 @@ export default class MethodWrapper {
         Object.values(this.method.settings).forEach(s => {
             this.dom.settings.appendChild(s.getHTMLElement());
         })
+
+        this.dom.score.appendChild(this.score.getHTMLElement());
 
     }
 
@@ -56,8 +63,12 @@ export default class MethodWrapper {
 
     updateTime(){
         if(this.timeStart < 0){ this.dom.time.innerText = ''; return; }
+
         let secs = (this.timeEnd >= 0 ? this.timeEnd - this.timeStart : Date.now() - this.timeStart) / 1000;
         this.dom.time.innerText = `${(Math.round(secs*100)/100).toFixed(2)}s`
+
+        this.score.update();
+
     }
 
     getHTMLElement(){
@@ -78,7 +89,8 @@ export default class MethodWrapper {
      * @param {number} value - The value to add as score
      */
     addScore(value){
-        this.scores.push([Date.now(), value]);
+        if(!this.running){ return; }
+        this.score.add(value);
         this.update();
     }
 
@@ -91,9 +103,15 @@ export default class MethodWrapper {
 
         await this.app.controls.stopMethods();
 
+        if(Object.values(this.app.map.nodes).length < 2){
+            Message.info("Please add at least two cities before running an optimizer.", 2000);
+            return false;
+        }
+
         this.running = true;
         this.progress = 0;
-        this.scores = [];
+        this.app.map.reset();
+        this.score.reset();
 
         this.timeStart = Date.now();
         this.timeEnd = -1;
@@ -103,13 +121,13 @@ export default class MethodWrapper {
 
         await this.method.run();
 
+        clearInterval(this.interval);
+        this.interval = null;
+        
+        this.running = false;
         this.timeEnd = Date.now();
         this.progress = 0;
         this.running = false;
-
-        clearInterval(this.interval);
-        this.interval = null;
-
         this.update();
 
         return true;
@@ -124,14 +142,14 @@ export default class MethodWrapper {
 
         await this.method.stop();
 
-        this.timeEnd = -1;
-        this.timeStart = -1;
-        this.progress = 0;
-        this.running = false;
-
         clearInterval(this.interval);
         this.interval = null;
 
+        this.timeEnd = -1;
+        this.timeStart = -1;
+        this.progress = 0;
+        this.score.reset();
+        this.running = false;
         this.update();
 
         return true;
