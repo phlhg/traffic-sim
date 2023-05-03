@@ -208,7 +208,7 @@ export default class Map {
         let c = a.id < b.id ? a : b;
         let d = a.id < b.id ? b : a;
         if(!this.edges.hasOwnProperty(c.id) || !this.edges[c.id].hasOwnProperty(d.id)){ 
-            console.warn(`Map: Edge ${c.id} -> ${d.id} does not exist!`);
+            console.error(`Map: Edge ${c.id} <-> ${d.id} does not exist!`);
             return null; 
         }
         return this.edges[c.id][d.id];
