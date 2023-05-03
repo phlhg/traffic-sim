@@ -26,6 +26,8 @@ export default class Bruteforce extends Method {
 
         worker.onmessage = e => {
 
+            if(this.done){ return; }
+
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
                 return;
@@ -34,7 +36,7 @@ export default class Bruteforce extends Method {
             let perm = e.data.value;
             this.app.map.resetOptimum();
             for(let i = 0; i < perm.length; i++){
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).setActive()
+                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive()
             }
 
             this.addScore(e.data.score);

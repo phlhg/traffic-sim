@@ -45,13 +45,15 @@ export default class SimpleAnt extends Method {
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
 
+            if(this.done){ return; }
+
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
 
                 this.app.map.resetWeights();
                 Object.keys(e.data.pheromones).forEach(p => {
                     let pp = p.split(',');
-                    this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) }).setWeight(e.data.pheromones[p]);
+                    this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })?.setWeight(e.data.pheromones[p]);
                 });
 
                 return;
@@ -63,7 +65,7 @@ export default class SimpleAnt extends Method {
 
             this.app.map.resetOptimum();
             for(let i = 0; i < perm.length; i++) {
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).setActive();
+                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive();
             }
 
             if(e.data.done) { 
@@ -71,7 +73,7 @@ export default class SimpleAnt extends Method {
                 this.app.map.resetOptimum();
                 this.app.map.resetWeights();
                 for(let i = 0; i < perm.length; i++) {
-                    this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).setActive().setWeight(1);
+                    this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive().setWeight(1);
                 }
                 this.done = true; 
             }
