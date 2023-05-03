@@ -67,10 +67,20 @@ export default class Map {
             e.preventDefault();
         })
 
-        this.dom.action_random.addEventListener("click", async e => {
-            this.addRandom(3);
-            e.preventDefault();
-        })
+        this.dom.action_random_interval = -1;
+
+        this.dom.action_random.onmousedown = async e => {
+            clearInterval(this.dom.action_random_interval);
+            this.addRandom(1);
+            this.dom.action_random_interval = setInterval(() => { this.addRandom(1); },200)
+        }
+        this.dom.action_random.ontouchstart = this.dom.action_random.onmousedown;
+
+        this.dom.action_random.onmouseup = async e => {
+            clearInterval(this.dom.action_random_interval);
+        }
+        this.dom.action_random.ontouchend = this.dom.action_random.onmouseup;
+        this.dom.action_random.ontouchcancel = this.dom.action_random.onmouseup;
 
     }
 
