@@ -3,31 +3,29 @@ import WorkerManager from "../../workers/manager";
 import Method from "../method"
 import { SliderSetting } from "../settings";
 
-export default class SimpleAnt extends Method {
+export default class Genetic extends Method {
 
     constructor(...data) {
         super(...data);
 
         this.worker = null;
 
-        this.name = "SimpleAnts";
-        this.description = "Simple ANT implementation";
+        this.name = "GeneticAlgorithm";
+        this.description = "Path optimization using a variation of genetic algorithm";
 
-        this.addSetting("num_ants", SliderSetting, { 
-            name: "Ants",
+        this.addSetting("population", SliderSetting, { 
+            name: "Population",
             min: 1, max: 250, value: 10
         });
 
-        this.addSetting("max_duration", SliderSetting, {
-            name: "Time limit",
-            min: 0.5, max: 60, value: 10, step: 0.1,
-            formatter: v => { return `${v.toFixed(1)}s`}
+        this.addSetting("generations", SliderSetting, {
+            name: "How many generations",
+            min: 1, max: 2000, value: 100, step: 1
         })
 
-        this.addSetting("amount_subtract", SliderSetting, {
-            name: "Pheromone degradation",
-            min: -20, max: 3, value: -7, step: 0.1,
-            formatter: v => { return v == 0 ? `1` : `10<sup>${v}</sup>`}
+        this.addSetting("mutation", SliderSetting, {
+            name: "Mutation Probability",
+            min: 0, max: 1, value: 0.2, step: 0.01,
         })
 
         this.done = false;
@@ -40,7 +38,7 @@ export default class SimpleAnt extends Method {
 
         this.done = false;
 
-        this.worker = WorkerManager.get("simpleant");
+        this.worker = WorkerManager.get("genetic");
 
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
@@ -83,9 +81,9 @@ export default class SimpleAnt extends Method {
         this.worker.postMessage({
             // make copy of cities to prevent user writing into it during execution
             cities: [...cities],
-            num_ants: this.getSetting("num_ants"),
-            max_duration: this.getSetting("max_duration"),
-            amount_subtract: Math.pow(10,this.getSetting("amount_subtract"))
+            population: this.getSetting("population"),
+            generations: this.getSetting("generations"),
+            mutation: this.getSetting("mutation")
         });
 
         while(!this.done) { await sleep(100); }
@@ -97,6 +95,11 @@ export default class SimpleAnt extends Method {
 
     async stop() {
         this.done = true;
+    }
+
+    slider(val) {
+        this.NUM_ANTS = val
+        console.log("val", val)
     }
 
 }
