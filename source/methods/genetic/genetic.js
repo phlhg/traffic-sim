@@ -1,7 +1,7 @@
 import { sleep } from "../../utils";
 import WorkerManager from "../../workers/manager";
 import Method from "../method"
-import { SliderSetting } from "../settings";
+import { SliderSetting, BooleanSetting } from "../settings";
 
 export default class Genetic extends Method {
 
@@ -15,17 +15,22 @@ export default class Genetic extends Method {
 
         this.addSetting("population", SliderSetting, { 
             name: "Population",
-            min: 1, max: 250, value: 10
+            min: 1, max: 2500, value: 100
         });
 
         this.addSetting("generations", SliderSetting, {
             name: "How many generations",
-            min: 1, max: 2000, value: 100, step: 1
+            min: 1, max: 5000, value: 1000, step: 1
         })
 
         this.addSetting("mutation", SliderSetting, {
             name: "Mutation Probability",
             min: 0, max: 1, value: 0.2, step: 0.01,
+        })
+
+        this.addSetting("crossover", BooleanSetting, {
+            name: "Enable Crossover", 
+            value: false
         })
 
         this.done = false;
@@ -45,19 +50,6 @@ export default class Genetic extends Method {
 
             if(this.done){ return; }
 
-            if(e.data.hasOwnProperty("progress")){
-                this.setProgress(e.data.progress);
-
-                this.app.map.resetWeights();
-                Object.keys(e.data.pheromones).forEach(p => {
-                    let pp = p.split(',');
-                    this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })?.setWeight(e.data.pheromones[p]);
-                });
-
-                return;
-            }
-
-            
             let perm = e.data.value;
             this.addScore(e.data.score);
 
@@ -83,7 +75,8 @@ export default class Genetic extends Method {
             cities: [...cities],
             population: this.getSetting("population"),
             generations: this.getSetting("generations"),
-            mutation: this.getSetting("mutation")
+            mutation: this.getSetting("mutation"),
+            crossover: this.getSetting("crossover")
         });
 
         while(!this.done) { await sleep(100); }

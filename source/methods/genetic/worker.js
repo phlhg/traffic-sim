@@ -6,13 +6,14 @@ export default function worker_genetic(data) {
     var cities = data.cities;
     // Max time to run one worker in milliseconds
     var GENERATIONS = data.generations;
+    var CROSSOVER = data.crossover
 
     // create population
     let pop = [];
     
     var perm_gen = permute(data.cities);
     var perm = perm_gen.next();
-
+    
     // everyone gets the same path to start
     // otherwise we run into errors with popsize > perms(path)
     for (let i = 0; i < data.population; i++) {
@@ -28,7 +29,9 @@ export default function worker_genetic(data) {
          */
         for (let i = 1; i < data.population; i++) {
             let index = Math.random() * data.population/4
-            Individual.crossover(pop[i], pop[index], perm_gen.length)
+
+            if (CROSSOVER)
+                Individual.crossover(pop[i], pop[index], perm_gen.length)
         }
 
         // mutate all 
