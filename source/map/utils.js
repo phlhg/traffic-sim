@@ -38,22 +38,21 @@ export function shortestPaths(map, source, limit){
     let previous = {};
     let nodes_done = [];
 
-    Object.entries(map.nodes).forEach(n => {
+    Object.values(map.nodes).forEach(n => {
         distance[n.id] = Infinity;
         previous[n.id] = null;
         queue.push(n);
     });
 
-    state[source.id].distance = 0;
+    distance[source.id] = 0;
 
-    while(queue.length > 0 && nodes_done.length < limit){
+    while(queue.length > 0){ //nodes_done.length < limit){
         // Get node with smallest distance in queue and remove it from queue
-        queue = queue.sort(a,b => { return distance[a.id] - distance[b.id]; })
-        let u = this.nodes[queue.shift()];
+        queue = queue.sort((a,b) => { return distance[a.id] - distance[b.id]; })
+        let u = queue.shift();
 
         // Iterate over all neighbours still in queue
-        for(let v in map.getNeighbours(u)){
-            if(!queue.includes(v.id)){ continue; }
+        for(let v of map.getNeighbours(u)){
             let e = map.getEdge(u, v);
             let d = distance[u.id] + e.distance;
             if(d < distance[v.id]){ // Check if new distance is smaller
@@ -68,7 +67,9 @@ export function shortestPaths(map, source, limit){
 
     // Generate paths from previous
     let paths = {}
-    for(let node in nodes_done){
+    for(let node of nodes_done){
+
+        if(node.id == source.id){ continue; } // Don't include path to source
 
         paths[node.id] = [];
         let last = node
@@ -86,3 +87,40 @@ export function shortestPaths(map, source, limit){
     return paths;
 
 }
+
+/**
+ * Calculates the traffic on each edge inplace
+ * @param {Map} map - A map object
+ * @param {number} limit - The maximal amount of djikstra iterations 
+ * @returns {Map} - Returns the map object with calculated traffic
+ */
+export function calculateTraffic(map, limit){
+
+    map.forEdges(e => { e.traffic = 0; })
+
+    for(let source of Object.values(map.nodes)){
+
+        let paths = shortestPaths(map, source, limit);
+        let population = Object.keys(paths).map(id => map.nodes[id].data.size).reduce((a,b) => a + b);
+        let fraction = source.data.size / population; 
+
+        for(let target_id of Object.keys(paths)){
+
+            let target = map.nodes[target_id];
+            let path = paths[target_id];
+
+            for(let i = 0; i < path.length - 1; i++){
+                let edge = map.getEdge(path[i], path[i+1])
+                edge.traffic += target.data.size * fraction;
+            }
+
+        }
+
+        map.update();
+
+    }
+
+    return map;
+
+}
+
