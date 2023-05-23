@@ -46,7 +46,7 @@ export function shortestPaths(map, source, limit){
 
     distance[source.id] = 0;
 
-    while(queue.length > 0){ //nodes_done.length < limit){
+    while(queue.length > 0 && nodes_done.length < limit){
         // Get node with smallest distance in queue and remove it from queue
         queue = queue.sort((a,b) => { return distance[a.id] - distance[b.id]; })
         let u = queue.shift();
