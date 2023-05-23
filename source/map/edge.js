@@ -76,7 +76,7 @@ export default class Edge {
     update(){
         this.dom.line.style.opacity = this.active ? this.weight : 0;
         // TODO: How should the width grow depending on the amount of traffic?
-        this.dom.line.style.strokeWidth = this.traffic / 1000;
+        this.dom.line.style.strokeWidth = (this.traffic / 1_000_000) * 8;
     }
 
 }

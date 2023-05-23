@@ -33,11 +33,11 @@ export default class Node {
         this.dom.node.setAttribute('cx', this.x)
         this.dom.node.setAttribute('cy', this.y)
         // TODO: How should cities be scaled depending on the size?
-        this.dom.node.setAttribute('r', this.data.size / 10)
+        this.dom.node.setAttribute('r', 2 + (this.data.size / 1_000_000) * 13)
         this.dom.node.setAttribute('class', `city`)
 
         this.dom.title = document.createElementNS("http://www.w3.org/2000/svg", "title")
-        this.dom.title.innerHTML = `Node: ${this.id}`
+        this.dom.title.innerHTML = `Node: ${this.id}\nPopulation: ${this.data.size.toLocaleString('de-CH')}`
         this.dom.node.appendChild(this.dom.title)
     }
 

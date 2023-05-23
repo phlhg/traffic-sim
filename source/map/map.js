@@ -151,7 +151,7 @@ export default class Map {
      */
     addNode(x, y){
         let id = Object.keys(this.nodes).length;
-        let node = new Node(id, x, y);
+        let node = new Node(id, x, y, { size: Math.round(100 + Math.random() * 1_000_000) });
         this.dom.svg_nodes.appendChild(node.getHTMLElement());
 
         this.edges[id] = {};
@@ -220,7 +220,11 @@ export default class Map {
      */
     getNeighbours(node){
         if(!this.edges.hasOwnProperty(node.id)){ return []; }
-        return Object.keys(this.edges[node.id]).map(id => this.nodes[id]);
+        return Object.keys(this.edges[node.id]).filter(id => {
+            return this.edges[node.id][id].active
+        }).map(id => {
+            return this.nodes[id]
+        });
     }
 
 }
