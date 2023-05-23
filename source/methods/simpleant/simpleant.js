@@ -36,11 +36,17 @@ export default class SimpleAnt extends Method {
 
     async run() {
 
-        let cities = Object.values(this.app.map.nodes).map(n => n.getObj());
-
         this.done = false;
 
         this.worker = WorkerManager.get("simpleant");
+
+        this.app.map.forEdges(e => { 
+            e.active = 1; 
+            e.weight = 0; 
+            e.traffic = 2000; 
+        }); // Reset all edges
+
+        let perm = null;
 
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
@@ -49,40 +55,35 @@ export default class SimpleAnt extends Method {
 
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
-
-                this.app.map.resetWeights();
-                Object.keys(e.data.pheromones).forEach(p => {
-                    let pp = p.split(',');
-                    this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })?.setWeight(e.data.pheromones[p]);
-                });
-
-                return;
+            } else {
+                perm = e.data.value;
+                this.addScore(e.data.score);
             }
 
-            
-            let perm = e.data.value;
-            this.addScore(e.data.score);
+            let max = Math.max(...Object.values(e.data.pheromones)); // normalize pheromones with maximum
 
-            this.app.map.resetOptimum();
-            for(let i = 0; i < perm.length; i++) {
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive();
-            }
+            this.app.map.forEdges(e => { e.weight = 0; });
+            Object.keys(e.data.pheromones).forEach(p => {
+                let pp = p.split(',');
+                let edge = this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })
+                edge.weight = (e.data.pheromones[p] / max) * 0.6;
+            });
 
-            if(e.data.done) { 
-                let perm = e.data.value;
-                this.app.map.resetOptimum();
-                this.app.map.resetWeights();
-                for(let i = 0; i < perm.length; i++) {
-                    this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive().setWeight(1);
-                }
+            if(e.data?.done) {
+                this.app.map.forEdges(e => { e.weight = 0; }); 
                 this.done = true; 
             }
+            
+            for(let i = 0; i < perm.length; i++) {
+                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).weight = 1;
+            }
+            this.app.map.update();
         }
 
         // Start worker by posting the message with the cities
         this.worker.postMessage({
             // make copy of cities to prevent user writing into it during execution
-            cities: [...cities],
+            cities: Object.values(this.app.map.nodes).map(n => n.getObj()),
             num_ants: this.getSetting("num_ants"),
             max_duration: this.getSetting("max_duration"),
             amount_subtract: Math.pow(10,this.getSetting("amount_subtract"))
@@ -90,7 +91,6 @@ export default class SimpleAnt extends Method {
 
         while(!this.done) { await sleep(100); }
 
-        // TODO: make this.worker an array of workers
         this.worker.terminate();
         this.worker = null;
     }

@@ -1,3 +1,5 @@
+import { dist } from "./utils";
+
 /** Object representing an edge on the map */
 export default class Edge {
 
@@ -13,10 +15,16 @@ export default class Edge {
         /** @property {Node} origin - The node at the traget */
         this.target = target;
 
-        /** @property {number} weight - The weight between 0 and 1 of the edge */
-        this.weight = 0;
+        /** @property {number} distance - The euclidian distance between orgin and target */
+        this.distance = dist(this.origin, this.target);
 
-        /** @property {boolean} active - Indicates if the edge is part of the optimum */
+        /** @property {number} weight - The weight between 0 and 1 of the edge */
+        this.weight = 1;
+
+        /** @property {number} traffic - Amount of traffic flowing trough the edge */
+        this.traffic = 2000;
+
+        /** @property {boolean} active - Indicates if the egde can be used */
         this.active = false;
 
         this.dom = {}
@@ -66,8 +74,9 @@ export default class Edge {
 
     /** Updates the SVG element */
     update(){
-        this.dom.line.style.opacity = this.active ? 1 : this.weight;
-        this.dom.line.style.strokeWidth = this.active ? 4 : 2;
+        this.dom.line.style.opacity = this.active ? this.weight : 0;
+        // TODO: How should the width grow depending on the amount of traffic?
+        this.dom.line.style.strokeWidth = this.traffic / 1000;
     }
 
 }

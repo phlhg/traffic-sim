@@ -22,6 +22,12 @@ export default class Bruteforce extends Method {
 
         this.done = false;
 
+        this.app.map.forEdges(e => { 
+            e.active = 1; 
+            e.weight = 0; 
+            e.traffic = 2000; 
+        }); // Reset all edges
+
         let worker = WorkerManager.get("bruteforce");
 
         worker.onmessage = e => {
@@ -32,12 +38,16 @@ export default class Bruteforce extends Method {
                 this.setProgress(e.data.progress);
                 return;
             }
+            
+            this.app.map.forEdges(e => { e.weight = 0; });
 
             let perm = e.data.value;
-            this.app.map.resetOptimum();
             for(let i = 0; i < perm.length; i++){
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive()
+                let edge = this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]);
+                edge.weight = 1;
             }
+            
+            this.app.map.update();
 
             this.addScore(e.data.score);
 

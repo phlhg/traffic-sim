@@ -113,6 +113,7 @@ export default function worker_simpleant(data) {
                     postMessage({
                         value: best_path,
                         score: best_score,
+                        pheromones: pheromones,
                         done: false
                     });
                 }
@@ -149,6 +150,7 @@ export default function worker_simpleant(data) {
     postMessage({
         value: best_path,
         score: best_score,
+        pheromones: pheromones,
         done: true
     });
 }

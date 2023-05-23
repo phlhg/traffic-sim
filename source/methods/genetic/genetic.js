@@ -43,6 +43,12 @@ export default class Genetic extends Method {
 
         this.done = false;
 
+        this.app.map.forEdges(e => { 
+            e.active = 1; 
+            e.weight = 0; 
+            e.traffic = 2000; 
+        }); // Reset all edges
+
         this.worker = WorkerManager.get("genetic");
 
         // callback function, "status", e.g the current permutation
@@ -53,20 +59,14 @@ export default class Genetic extends Method {
             let perm = e.data.value;
             this.addScore(e.data.score);
 
-            this.app.map.resetOptimum();
+            this.app.map.forEdges(e => { e.weight = 0; });
             for(let i = 0; i < perm.length; i++) {
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive();
+                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).weight = 1;
             }
 
-            if(e.data.done) { 
-                let perm = e.data.value;
-                this.app.map.resetOptimum();
-                this.app.map.resetWeights();
-                for(let i = 0; i < perm.length; i++) {
-                    this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive().setWeight(1);
-                }
-                this.done = true; 
-            }
+            if(e.data.done) { this.done = true; }
+
+            this.app.map.update();
         }
 
         // Start worker by posting the message with the cities
@@ -81,7 +81,6 @@ export default class Genetic extends Method {
 
         while(!this.done) { await sleep(100); }
 
-        // TODO: make this.worker an array of workers
         this.worker.terminate();
         this.worker = null;
     }

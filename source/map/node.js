@@ -21,6 +21,9 @@ export default class Node {
         /** @property {object} data - Additional data of the node */
         this.data = data ?? {}
 
+        /** @property {number} data.size - Size of the city */
+        this.data.size = this.data.size ?? 100
+
         this.dom = {}
         this.setup();
     }
@@ -29,7 +32,8 @@ export default class Node {
         this.dom.node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         this.dom.node.setAttribute('cx', this.x)
         this.dom.node.setAttribute('cy', this.y)
-        this.dom.node.setAttribute('r', 10)
+        // TODO: How should cities be scaled depending on the size?
+        this.dom.node.setAttribute('r', this.data.size / 10)
         this.dom.node.setAttribute('class', `city`)
 
         this.dom.title = document.createElementNS("http://www.w3.org/2000/svg", "title")

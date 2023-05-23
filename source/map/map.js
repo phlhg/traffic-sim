@@ -154,39 +154,38 @@ export default class Map {
         let node = new Node(id, x, y);
         this.dom.svg_nodes.appendChild(node.getHTMLElement());
 
+        this.edges[id] = {};
+
         Object.values(this.nodes).forEach(n => {
             let edge = new Edge(n, node);
             this.edges[n.id][id] = edge;
+            this.edges[id][n.id] = edge;
             this.dom.svg_edges.appendChild(edge.getHTMLElement());
         });
-        
+
         this.nodes[id] = node;
-        this.edges[id] = {};
 
         this.dom.notice.classList.remove("active");
 
         return node;
     }
 
-    /** Resets the weight of all edges to 0 */
-    resetWeights(){ this.forEdges(e => { e.setWeight(0); }) }
-
-    /** Removes all edges from the optimum */
-    resetOptimum(){ this.forEdges(e => { e.setActive(false); }) }
-
-    /** Resets the map without clearing it's contents */
-    reset(){
-        this.resetOptimum();
-        this.resetWeights();
+    update(){
+        this.forEdges(e => { e.update() });
     }
 
     /**
      * Runs a function over all edges
      * @param {Function} fn - Function, which takes an edge as an argument
      */
-    forEdges(fn){
-        Object.values(this.edges).forEach(list => {
-            Object.values(list).forEach(e => { fn(e); })
+    forEdges(callback){
+        Object.keys(this.edges).forEach(id1 => {
+            let list = this.edges[id1];
+            Object.keys(list).forEach(id2 => {
+                if(id1 >= id2){ return; }
+                let edge = this.edges[id1][id2]; 
+                callback(edge);
+            })
         })
     }
 
@@ -212,6 +211,16 @@ export default class Map {
             return null; 
         }
         return this.edges[c.id][d.id];
+    }
+
+    /**
+     * Returns the neighbouring nodes
+     * @param {Node} node The node for which one wants to know the neighbours
+     * @returns {Node[]} The list of neighbouring nodes - Returns an empty list if node has no neighbours or does not exists
+     */
+    getNeighbours(node){
+        if(!this.edges.hasOwnProperty(node.id)){ return []; }
+        return Object.keys(this.edges[node.id]).map(id => this.nodes[id]);
     }
 
 }
