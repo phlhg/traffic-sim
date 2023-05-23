@@ -2,6 +2,7 @@ import App from "./app"
 import Bruteforce from "./methods/bruteforce/bruteforce";
 import SimpleAnt from "./methods/simpleant/simpleant";
 import Genetic from "./methods/genetic/genetic";
+import Test from "./methods/test/test";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -12,4 +13,5 @@ document.addEventListener('DOMContentLoaded', () => {
     app.controls.addMethod(SimpleAnt);
     app.controls.addMethod(Genetic)
     app.controls.addMethod(Genetic,1)
+    app.controls.addMethod(Test,1);
 })
