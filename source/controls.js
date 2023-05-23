@@ -1,5 +1,3 @@
-import Bruteforce from "./methods/bruteforce/bruteforce";
-import SliderMethodWrapper from "./methods/sliderwrapper";
 import MethodWrapper from "./methods/wrapper";
 
 export default class Controls {
