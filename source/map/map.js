@@ -6,6 +6,8 @@ export default class Map {
     constructor(app,wrapper){
         this.app = app;
 
+        this.state = 'tsp'
+
         this.dom = {}
         this.dom.wrapper = wrapper;
 
@@ -171,7 +173,7 @@ export default class Map {
     }
 
     update(){
-        this.forEdges(e => { e.update() });
+        this.forEdges(e => { e.update(this.state) });
     }
 
     /**

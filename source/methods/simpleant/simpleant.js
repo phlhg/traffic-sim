@@ -20,7 +20,7 @@ export default class SimpleAnt extends Method {
 
         this.addSetting("max_duration", SliderSetting, {
             name: "Time limit",
-            min: 0.5, max: 60, value: 10, step: 0.1,
+            min: 0.5, max: 60, value: 5, step: 0.1,
             formatter: v => { return `${v.toFixed(1)}s`}
         })
 
@@ -41,7 +41,7 @@ export default class SimpleAnt extends Method {
         this.worker = WorkerManager.get("simpleant");
 
         this.app.map.forEdges(e => { 
-            e.active = 1; 
+            e.active = 0; 
             e.weight = 0; 
             e.traffic = 2000; 
         }); // Reset all edges
@@ -50,33 +50,41 @@ export default class SimpleAnt extends Method {
 
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
-
             if(this.done){ return; }
 
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
-            } else {
-                perm = e.data.value;
+
+                this.app.map.forEdges(e => { e.weight = 0; });
+                Object.keys(e.data.pheromones).forEach(p => {
+                    let pp = p.split(',');
+                    let edge = this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })
+                    edge.weight = (e.data.pheromones[p]);
+                });
+            } 
+            
+            perm = e.data.value;
+            if (perm)
+            {
                 this.addScore(e.data.score);
-            }
 
-            let max = Math.max(...Object.values(e.data.pheromones)); // normalize pheromones with maximum
+                this.app.map.forEdges(e => { e.active = 0; });
+                for(let i = 0; i < perm?.length; i++) {
+                    this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive();
+                }
 
-            this.app.map.forEdges(e => { e.weight = 0; });
-            Object.keys(e.data.pheromones).forEach(p => {
-                let pp = p.split(',');
-                let edge = this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })
-                edge.weight = (e.data.pheromones[p] / max) * 0.6;
-            });
-
-            if(e.data?.done) {
-                this.app.map.forEdges(e => { e.weight = 0; }); 
-                this.done = true; 
+                if(e.data.done) {
+                    this.app.map.forEdges(e => { e.weight = 0; e.active = 0 }); 
+                    console.log("we done")
+                    this.done = true; 
+                    
+                    for(let i = 0; i < perm?.length; i++) {
+                        this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).weight = 1;
+                        this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).active = 1;
+                    }
+                }
             }
             
-            for(let i = 0; i < perm.length; i++) {
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).weight = 1;
-            }
             this.app.map.update();
         }
 

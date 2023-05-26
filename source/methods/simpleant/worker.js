@@ -87,6 +87,7 @@ export default function worker_simpleant(data) {
         // Check that we still have time to do another round
         let cur_time = new Date().getTime();
         if(cur_time - start_time >= TIME_LIMIT) {
+            console.log("TIMELIMIT DONE")
             break;
         }
 
@@ -153,4 +154,5 @@ export default function worker_simpleant(data) {
         pheromones: pheromones,
         done: true
     });
+    console.log("worker done")
 }

@@ -73,10 +73,16 @@ export default class Edge {
     }
 
     /** Updates the SVG element */
-    update(){
-        this.dom.line.style.opacity = this.active ? this.weight : 0;
-        // TODO: How should the width grow depending on the amount of traffic?
-        this.dom.line.style.strokeWidth = (this.traffic / 1_000_000) * 8;
+    update(state='traffic'){
+        if (state == 'tsp') {
+            this.dom.line.style.opacity = this.active ? 1 : this.weight;
+            this.dom.line.style.strokeWidth = this.active ? 4 : 2;
+        }
+        else if (state == 'traffic') {
+            this.dom.line.style.opacity = this.active ? this.weight : 0;
+            // TODO: How should the width grow depending on the amount of traffic?
+            this.dom.line.style.strokeWidth = (this.traffic / 1_000_000) * 8;
+        }
     }
 
 }
