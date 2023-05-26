@@ -23,7 +23,7 @@ export default class Bruteforce extends Method {
         this.done = false;
 
         this.app.map.forEdges(e => { 
-            e.active = 1; 
+            e.active = 0; 
             e.weight = 0; 
             e.traffic = 2000; 
         }); // Reset all edges
@@ -39,12 +39,13 @@ export default class Bruteforce extends Method {
                 return;
             }
             
-            this.app.map.forEdges(e => { e.weight = 0; });
+            this.app.map.forEdges(e => { e.weight = 0; e.active=0});
 
             let perm = e.data.value;
             for(let i = 0; i < perm.length; i++){
                 let edge = this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]);
                 edge.weight = 1;
+                edge.active = 1;
             }
             
             this.app.map.update();
