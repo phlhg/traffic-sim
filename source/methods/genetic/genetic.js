@@ -44,7 +44,7 @@ export default class Genetic extends Method {
         this.done = false;
 
         this.app.map.forEdges(e => { 
-            e.active = 1; 
+            e.active = 0; 
             e.weight = 0; 
             e.traffic = 2000; 
         }); // Reset all edges
@@ -59,9 +59,11 @@ export default class Genetic extends Method {
             let perm = e.data.value;
             this.addScore(e.data.score);
 
-            this.app.map.forEdges(e => { e.weight = 0; });
+            this.app.map.forEdges(e => { e.weight = 0; e.active=0});
             for(let i = 0; i < perm.length; i++) {
-                this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).weight = 1;
+                let edge = this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])
+                edge.weight = 1;
+                edge.active = 1;
             }
 
             if(e.data.done) { this.done = true; }
