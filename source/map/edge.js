@@ -27,6 +27,8 @@ export default class Edge {
         /** @property {boolean} active - Indicates if the egde can be used */
         this.active = false;
 
+        this.width = 1;
+
         this.dom = {}
         this.setup();
 
@@ -79,9 +81,9 @@ export default class Edge {
             this.dom.line.style.strokeWidth = this.active ? 4 : 2;
         }
         else if (state == 'traffic') {
-            this.dom.line.style.opacity = this.active ? this.weight : 0;
+            this.dom.line.style.opacity = this.active ? (this.traffic / 1_000_000) * 8 : 0;
             // TODO: How should the width grow depending on the amount of traffic?
-            this.dom.line.style.strokeWidth = (this.traffic / 1_000_000) * 8;
+            this.dom.line.style.strokeWidth = this.width
         }
     }
 

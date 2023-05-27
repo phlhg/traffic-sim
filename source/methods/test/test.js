@@ -26,12 +26,14 @@ export default class Test extends Method {
 
         this.app.map.forNodes(n => {
             let closest = Object.values(this.app.map.nodes).sort((a,b) => { return dist(n,a) - dist(n,b); });
-            for(let v of closest.slice(1,4)){ this.app.map.getEdge(n,v).active = 1; }
+            for(let v of closest.slice(1,4)){ this.app.map.getEdge(n,v).active = 1; this.app.map.getEdge(n,v).width = 10;}
         })
 
-        this.app.map.update();
 
-        calculateTraffic(this.app.map, 10);
+        var fitness = calculateTraffic(this.app.map, 10);
+        console.log(fitness)
+
+        this.app.map.update();
 
     }
 

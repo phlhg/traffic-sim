@@ -23,7 +23,7 @@ export function length(path){
 }
 
 /**
- * Get the shorttest path between two nodes
+ * Get the shortest paths between two nodes
  * @param {Map} map - The map object
  * @param {Node} origin - The start of the path
  * @param {number} limit - Maximal amount of iterations
@@ -46,6 +46,7 @@ export function shortestPaths(map, source, limit){
 
     distance[source.id] = 0;
 
+    // dijkstra with limit
     while(queue.length > 0 && nodes_done.length < limit){
         // Get node with smallest distance in queue and remove it from queue
         queue = queue.sort((a,b) => { return distance[a.id] - distance[b.id]; })
@@ -89,17 +90,23 @@ export function shortestPaths(map, source, limit){
 }
 
 /**
- * Calculates the traffic on each edge inplace
+ * Calculates the traffic on each ACTIVE edge inplace
  * @param {Map} map - A map object
  * @param {number} limit - The maximal amount of djikstra iterations 
- * @returns {Map} - Returns the map object with calculated traffic
+ * @param {number} CONST_EDGE_COST - The cost an edge costs
+ * @param {number} CONST_FAILURE_COST - The cost for STAU
+ * @returns {number} sum - Returns the fitness function
  */
-export function calculateTraffic(map, limit){
+export function calculateTraffic(map, limit, CONST_EDGE_COST=1, CONST_FAILURE_COST=10){
 
+    // reset traffic
     map.forEdges(e => { e.traffic = 0; })
 
+    // iterate over all nodes
     for(let source of Object.values(map.nodes)){
 
+        // sum up all endpoints sizes of cities and calculate fraction of
+        // source city given this population sum
         let paths = shortestPaths(map, source, limit);
         let population = Object.keys(paths).map(id => map.nodes[id].data.size).reduce((a,b) => a + b);
         let fraction = source.data.size / population; 
@@ -111,16 +118,26 @@ export function calculateTraffic(map, limit){
 
             for(let i = 0; i < path.length - 1; i++){
                 let edge = map.getEdge(path[i], path[i+1])
-                edge.traffic += target.data.size * fraction;
+                edge.traffic += (target.data.size * fraction) 
             }
+        }
+    }
+    var sum = 0
+
+    map.forEdges( e => {
+        if (e.active) {
+            sum += CONST_EDGE_COST + e.width*e.distance/100 + e.traffic/10000
+            
+            // check if street is enough for traffic
+            let t = e.target.data.size
+            let o = e.origin.data.size
+            if (e.traffic > (t+o)*e.width)
+                sum += CONST_FAILURE_COST
 
         }
+    });
 
-        map.update();
-
-    }
-
-    return map;
+    return sum;
 
 }
 

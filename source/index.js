@@ -12,6 +12,5 @@ document.addEventListener('DOMContentLoaded', () => {
     app.controls.addMethod(Bruteforce);
     app.controls.addMethod(SimpleAnt);
     app.controls.addMethod(Genetic)
-    app.controls.addMethod(Genetic,1)
     app.controls.addMethod(Test,1);
 })
