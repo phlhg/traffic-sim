@@ -198,7 +198,7 @@ export default class Map {
             // Create edge element if does not exist yet
             if(!this.edges.hasOwnProperty(key)){
                 this.edges[key] = {
-                    main: document.createElementNS("http://www.w3.org/2000/svg", "line"),
+                    main: document.createElementNS("http://www.w3.org/2000/svg", "path"),
                     title: document.createElementNS("http://www.w3.org/2000/svg", "title")
                 }
 
@@ -214,21 +214,26 @@ export default class Map {
             let origin = this.app.graph.getNode(edge.origin);
             let target = this.app.graph.getNode(edge.target);
 
-            element.setAttribute('x1', origin.x)
-            element.setAttribute('y1', origin.y)
-            element.setAttribute('x2', target.x)
-            element.setAttribute('y2', target.y)
+            let delta = { x: target.x - origin.x,  y: target.y - origin.y }
+
+            if(this.app.problem == 'traffic') {
+                element.setAttribute('d', `M ${origin.x} ${origin.y} Q ${origin.x + delta.x/2 + delta.y/8} ${origin.y + delta.y/2 + delta.x/8}, ${target.x} ${target.y}`)
+            } else {
+                element.setAttribute('d', `M ${origin.x} ${origin.y} L ${target.x} ${target.y}`)
+            }
 
             if(this.app.problem == 'tsp'){
                 // TSP
                 element.style.opacity = edge.data.weight;
+                element.style.display = "block"
                 element.style.strokeWidth = 2;
                 title.innerHTML = `Weight: ${edge.data.weight}`
             } else if(this.app.problem == 'traffic') {
-                element.style.opacity = edge.active ? 1 : 0;
+                element.style.opacity = 1
+                element.style.display = edge.active ? "block" : "none";
                 // TODO: How should the width grow depending on the amount of traffic?
-                element.style.strokeWidth = (edge.data.traffic / 1_000_000) * 8
-                title.innerHTML = `Traffic: ${edge.data.traffic}`
+                element.style.strokeWidth = 0.1 + (edge.data.traffic / 1_000_000) * 8
+                title.innerHTML = `N${edge.origin} -> N${edge.target}\nTraffic: ${edge.data.traffic}`
             } else {
                 element.style.opacity = edge.active ? 1 : 0;
                 element.style.strokeWidth = 1;

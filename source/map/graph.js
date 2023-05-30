@@ -31,9 +31,8 @@ export default class Graph {
 
         Object.keys(this.nodes).map(i => parseInt(i)).forEach(n => {
             if(n == id){ return; }
-            let edge = new Edge(n, id);
-            this.edges[n][id] = edge;
-            this.edges[id][n] = edge;
+            this.edges[n][id] = new Edge(n, id);
+            this.edges[id][n] = new Edge(id, n);
         });
 
         return node;
@@ -56,8 +55,7 @@ export default class Graph {
         Object.keys(this.edges).forEach(id1 => {
             let list = this.edges[id1];
             Object.keys(list).forEach(id2 => {
-                if(id1 >= id2){ return; }
-                edges.push(this.edges[id1][id2]);
+                edges.push(list[id2]);
             })
         })
         return edges;
@@ -95,13 +93,11 @@ export default class Graph {
      * @returns {Edge?} The object for the edge if it exists, otherwise null
      */
     getEdge(a,b){
-        let c = a < b ? a : b;
-        let d = a < b ? b : a;
-        if(!this.edges.hasOwnProperty(c) || !this.edges[c].hasOwnProperty(d)){ 
-            console.error(`Graph: Edge ${c} <-> ${d} does not exist!`);
+        if(!this.edges.hasOwnProperty(a) || !this.edges[a].hasOwnProperty(b)){ 
+            console.error(`Graph: Edge ${a} -> ${b} does not exist!`);
             return null; 
         }
-        return this.edges[c][d];
+        return this.edges[a][b];
     }
 
     /** 

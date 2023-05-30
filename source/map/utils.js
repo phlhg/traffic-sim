@@ -116,7 +116,7 @@ export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_
 
             for(let i = 0; i < path.length - 1; i++){
                 let edge = graph.getEdge(path[i], path[i+1])
-                edge.data.traffic += (target.data.size * fraction) 
+                edge.data.traffic += Math.floor(target.data.size * fraction) 
             }
         }
     }
