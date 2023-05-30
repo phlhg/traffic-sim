@@ -98,7 +98,7 @@ export function shortestPaths(graph, source, limit){
 export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_COST=10){
 
     // reset traffic
-    graph.forEdges(e => { e.traffic = 0; })
+    graph.forEdges(e => { e.data.traffic = 0; })
 
     // iterate over all nodes
     for(let source of graph.getNodes()){
@@ -116,7 +116,7 @@ export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_
 
             for(let i = 0; i < path.length - 1; i++){
                 let edge = graph.getEdge(path[i], path[i+1])
-                edge.traffic += (target.data.size * fraction) 
+                edge.data.traffic += (target.data.size * fraction) 
             }
         }
     }
@@ -126,12 +126,12 @@ export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_
     graph.forEdges( e => {
         if(!e.active) { return }
         let distance = dist(graph.getNode(e.origin), graph.getNode(e.target))
-        sum += CONST_EDGE_COST + e.width*distance/100 + e.traffic/10000
+        sum += CONST_EDGE_COST + e.data.width*distance/100 + e.data.traffic/10000
         
         // check if street is enough for traffic
         let t = graph.getNode(e.target).data.size
         let o = graph.getNode(e.origin).data.size
-        if (e.traffic > (t+o)*e.width)
+        if (e.data.traffic > (t+o)*e.data.width)
             sum += CONST_FAILURE_COST
 
     });

@@ -221,17 +221,18 @@ export default class Map {
 
             if(this.app.problem == 'tsp'){
                 // TSP
-                element.style.opacity = edge.weight;
+                element.style.opacity = edge.data.weight;
                 element.style.strokeWidth = 2;
-                title.innerHTML = `Weight: ${edge.weight}`
+                title.innerHTML = `Weight: ${edge.data.weight}`
             } else if(this.app.problem == 'traffic') {
                 element.style.opacity = edge.active ? 1 : 0;
                 // TODO: How should the width grow depending on the amount of traffic?
-                element.style.strokeWidth = (edge.traffic / 1_000_000) * 8
-                title.innerHTML = `Traffic: ${edge.traffic}`
+                element.style.strokeWidth = (edge.data.traffic / 1_000_000) * 8
+                title.innerHTML = `Traffic: ${edge.data.traffic}`
             } else {
                 element.style.opacity = edge.active ? 1 : 0;
                 element.style.strokeWidth = 1;
+                title.innerHTML = ``
             }
 
         })

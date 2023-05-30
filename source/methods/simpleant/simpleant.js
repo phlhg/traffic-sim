@@ -44,8 +44,8 @@ export default class SimpleAnt extends Method {
 
         this.app.graph.forEdges(e => { 
             e.active = 0; 
-            e.weight = 0; 
-            e.traffic = 2000; 
+            e.data.weight = 0; 
+            e.data.traffic = 2000; 
         }); // Reset all edges
 
         let perm = null;
@@ -57,11 +57,11 @@ export default class SimpleAnt extends Method {
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
 
-                this.app.graph.forEdges(e => { e.weight = 0; });
+                this.app.graph.forEdges(e => { e.data.weight = 0; });
                 Object.keys(e.data.pheromones).forEach(p => {
                     let pp = p.split(',');
                     let edge = this.app.graph.getEdge(pp[0],pp[1])
-                    edge.weight = (e.data.pheromones[p]);
+                    edge.data.weight = (e.data.pheromones[p]);
                 });
             } 
             
@@ -70,18 +70,19 @@ export default class SimpleAnt extends Method {
             {
                 this.addScore(e.data.score);
 
-                this.app.graph.forEdges(e => { e.active = 0; });
+                this.app.graph.forEdges(e => { e.active = false; });
                 for(let i = 0; i < perm?.length; i++) {
-                    this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)?.setActive();
+                    let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)
+                    edge.active = true;
                 }
 
                 if(e.data.done) {
-                    this.app.graph.forEdges(e => { e.weight = 0; e.active = 0 }); 
+                    this.app.graph.forEdges(e => { e.data.weight = 0; e.active = 0 }); 
                     console.log("we done")
                     this.done = true; 
                     
                     for(let i = 0; i < perm?.length; i++) {
-                        this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).weight = 1;
+                        this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).data.weight = 1;
                         this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).active = 1;
                     }
                 }

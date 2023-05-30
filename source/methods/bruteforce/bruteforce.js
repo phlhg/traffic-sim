@@ -26,7 +26,7 @@ export default class Bruteforce extends Method {
 
         this.app.graph.forEdges(e => { 
             e.active = 1; 
-            e.weight = 1; 
+            e.data.weight = 1; 
         }); // Reset all edges
 
         let worker = WorkerManager.get("bruteforce");
@@ -40,12 +40,12 @@ export default class Bruteforce extends Method {
                 return;
             }
             
-            this.app.graph.forEdges(e => { e.weight = 0; });
+            this.app.graph.forEdges(e => { e.data.weight = 0; });
 
             let perm = e.data.value;
             for(let i = 0; i < perm.length; i++){
                 let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id);
-                edge.weight = 1;
+                edge.data.weight = 1;
             }
 
             this.addScore(e.data.score);

@@ -22,8 +22,8 @@ export default class Test extends Method {
 
         this.app.graph.forEdges(e => { 
             e.active = false; 
-            e.width = 10;
-            e.traffic = 0; 
+            e.data.width = 10;
+            e.data.traffic = 0; 
         }); // Reset all edges
 
         this.app.graph.forNodes(n => {

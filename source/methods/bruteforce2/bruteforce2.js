@@ -30,9 +30,9 @@ export default class Bruteforce2 extends Method {
 
         this.app.graph.forEdges(e => { 
             e.active = false; 
-            e.width = 0
-            e.weight = 0; 
-            e.traffic = 0; 
+            e.data.width = 0
+            e.data.weight = 0; 
+            e.data.traffic = 0; 
         }); // Reset all edges
 
         let worker = WorkerManager.get("bruteforce2");
@@ -46,13 +46,13 @@ export default class Bruteforce2 extends Method {
                 return;
             }
             
-            this.app.graph.forEdges(e => { e.width = 0; e.active=0});
+            this.app.graph.forEdges(e => { e.data.width = 0; e.active=0});
 
             let perm = e.data.value;
             for(let i = 0; i < perm.length; i++){
                 //let edge = this.app.graph.getEdge(perm[i],perm[(i+1)%perm.length]);
-                //edge.weight = 1;
-                //edge.active = 1;
+                //edge.data.weight = 1;
+                //edge.data.active = 1;
             }
             
             this.app.map.update();

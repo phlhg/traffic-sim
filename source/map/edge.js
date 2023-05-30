@@ -13,38 +13,21 @@ export default class Edge {
         /** @property {number} origin - The id of node at the traget */
         this.target = target;
 
-        /** @property {number} weight - The weight between 0 and 1 of the edge */
-        this.weight = 0;
-
-        /** @property {number} traffic - Amount of traffic flowing trough the edge */
-        this.traffic = 0;
-
-        /** @property {number} width - Amount of traffic the edge is able to handle */
-        this.width = 0;
-
         /** @property {boolean} active - Indicates if the egde can be used */
         this.active = false;
+
+        /** @property {object} data - Object containing addtional data about the edge */
+        this.data = {}
+
+        /** @property {number} data.weight - The weight between 0 and 1 of the edge */
+        this.data.weight = 0;
+
+        /** @property {number} data.traffic - Amount of traffic flowing trough the edge */
+        this.data.traffic = 0;
+
+        /** @property {number} data.width - Amount of traffic the edge is able to handle */
+        this.data.width = 0;
         
-    }
-
-    /**
-     * Set the weight of the edge.
-     * @param {number} w Weight between 0 and 1
-     * @returns {Edge} Returns the edge for chaining
-     */
-    setWeight(w){
-        this.weight = w;
-        return this;
-    }
-
-    /**
-     * Sets the membership of the edge to the optimum
-     * @param {boolean} state True if part of the optimum, false otherwise (Default: true)
-     * @returns {Edge} Returns the edge for chaining
-     */
-    setActive(state){
-        this.active = state ?? true;
-        return this;
     }
 
     /** 

@@ -45,8 +45,8 @@ export default class Genetic extends Method {
 
         this.app.graph.forEdges(e => { 
             e.active = 0; 
-            e.weight = 0; 
-            e.traffic = 2000; 
+            e.data.weight = 0; 
+            e.data.traffic = 2000; 
         }); // Reset all edges
 
         this.worker = WorkerManager.get("genetic");
@@ -59,10 +59,10 @@ export default class Genetic extends Method {
             let perm = e.data.value;
             this.addScore(e.data.score);
 
-            this.app.graph.forEdges(e => { e.weight = 0; e.active=0});
+            this.app.graph.forEdges(e => { e.data.weight = 0; e.active=0});
             for(let i = 0; i < perm.length; i++) {
                 let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)
-                edge.weight = 1;
+                edge.data.weight = 1;
                 edge.active = 1;
             }
 
