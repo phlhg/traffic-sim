@@ -64,6 +64,7 @@ export default class SimpleAnt extends Method {
             }); 
 
             if(e.data.hasOwnProperty("progress")){ this.setProgress(e.data.progress); }
+            if(e.data.hasOwnProperty("score")){ this.addScore(e.data.score); }
             
             perm = e.data.value ?? perm;
 
