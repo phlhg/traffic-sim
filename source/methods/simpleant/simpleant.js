@@ -43,9 +43,8 @@ export default class SimpleAnt extends Method {
         this.worker = WorkerManager.get("simpleant");
 
         this.app.graph.forEdges(e => { 
-            e.active = 0; 
-            e.data.weight = 0; 
-            e.data.traffic = 2000; 
+            e.active = true; 
+            e.data.weight = 0;
         }); // Reset all edges
 
         let perm = null;
@@ -54,40 +53,33 @@ export default class SimpleAnt extends Method {
         this.worker.onmessage = e => {
             if(this.done){ return; }
 
-            if(e.data.hasOwnProperty("progress")){
-                this.setProgress(e.data.progress);
+            let pheromones = e.data.pheromones;
+            let pheromax = Math.max(...Object.values(pheromones));
 
-                this.app.graph.forEdges(e => { e.data.weight = 0; });
-                Object.keys(e.data.pheromones).forEach(p => {
-                    let pp = p.split(',');
-                    let edge = this.app.graph.getEdge(pp[0],pp[1])
-                    edge.data.weight = (e.data.pheromones[p]);
-                });
-            } 
+            // Set weights from pheromones
+            this.app.graph.forEdges(e => { e.data.weight = 0; });
+            Object.keys(pheromones).forEach(p => {
+                let pp = p.split(',');
+                this.app.graph.getEdge(pp[0],pp[1]).data.weight = (e.data.pheromones[p] / pheromax) * 0.8;
+            }); 
+
+            if(e.data.hasOwnProperty("progress")){ this.setProgress(e.data.progress); }
             
-            perm = e.data.value;
-            if (perm)
-            {
-                this.addScore(e.data.score);
+            perm = e.data.value ?? perm;
 
-                this.app.graph.forEdges(e => { e.active = false; });
-                for(let i = 0; i < perm?.length; i++) {
-                    let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)
-                    edge.active = true;
-                }
+            if(perm === null){ this.app.map.update(); return; }
 
-                if(e.data.done) {
-                    this.app.graph.forEdges(e => { e.data.weight = 0; e.active = 0 }); 
-                    console.log("we done")
-                    this.done = true; 
-                    
-                    for(let i = 0; i < perm?.length; i++) {
-                        this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).data.weight = 1;
-                        this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).active = 1;
-                    }
-                }
+            // Clear pheromones if done
+            if(e.data.done) {
+                this.app.graph.forEdges(e => { e.data.weight = 0; }); 
+                this.done = true; 
             }
-            
+
+            // Set weight of active permutation to 1
+            for(let i = 0; i < perm.length; i++) {
+                this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).data.weight = 1;
+            }
+
             this.app.map.update();
         }
 
