@@ -26,14 +26,16 @@ export default class Bruteforce2 extends Method {
 
         this.done = false;
 
-        this.app.map.forEdges(e => { 
-            e.active = 0; 
+        this.app.problem = "traffic"
+
+        this.app.graph.forEdges(e => { 
+            e.active = false; 
             e.width = 0
             e.weight = 0; 
             e.traffic = 0; 
         }); // Reset all edges
 
-        let worker = WorkerManager.get("bruteforce");
+        let worker = WorkerManager.get("bruteforce2");
 
         worker.onmessage = e => {
 
@@ -44,11 +46,11 @@ export default class Bruteforce2 extends Method {
                 return;
             }
             
-            this.app.map.forEdges(e => { e.width = 0; e.active=0});
+            this.app.graph.forEdges(e => { e.width = 0; e.active=0});
 
             let perm = e.data.value;
             for(let i = 0; i < perm.length; i++){
-                //let edge = this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]);
+                //let edge = this.app.graph.getEdge(perm[i],perm[(i+1)%perm.length]);
                 //edge.weight = 1;
                 //edge.active = 1;
             }
@@ -60,10 +62,8 @@ export default class Bruteforce2 extends Method {
             if(e.data.done){ this.done = true; }
         }
 
-        const mapData = JSON.stringify(this.app.map);
-
         worker.postMessage({
-            map: mapData,
+            graph: this.app.graph,
             max_duration: this.getSetting("max_duration"),
         });
 

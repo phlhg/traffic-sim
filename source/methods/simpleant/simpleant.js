@@ -38,9 +38,11 @@ export default class SimpleAnt extends Method {
 
         this.done = false;
 
+        this.app.problem = "tsp"
+
         this.worker = WorkerManager.get("simpleant");
 
-        this.app.map.forEdges(e => { 
+        this.app.graph.forEdges(e => { 
             e.active = 0; 
             e.weight = 0; 
             e.traffic = 2000; 
@@ -55,10 +57,10 @@ export default class SimpleAnt extends Method {
             if(e.data.hasOwnProperty("progress")){
                 this.setProgress(e.data.progress);
 
-                this.app.map.forEdges(e => { e.weight = 0; });
+                this.app.graph.forEdges(e => { e.weight = 0; });
                 Object.keys(e.data.pheromones).forEach(p => {
                     let pp = p.split(',');
-                    let edge = this.app.map.getEdge({ id: parseInt(pp[0]) },{ id: parseInt(pp[1]) })
+                    let edge = this.app.graph.getEdge(pp[0],pp[1])
                     edge.weight = (e.data.pheromones[p]);
                 });
             } 
@@ -68,19 +70,19 @@ export default class SimpleAnt extends Method {
             {
                 this.addScore(e.data.score);
 
-                this.app.map.forEdges(e => { e.active = 0; });
+                this.app.graph.forEdges(e => { e.active = 0; });
                 for(let i = 0; i < perm?.length; i++) {
-                    this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])?.setActive();
+                    this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)?.setActive();
                 }
 
                 if(e.data.done) {
-                    this.app.map.forEdges(e => { e.weight = 0; e.active = 0 }); 
+                    this.app.graph.forEdges(e => { e.weight = 0; e.active = 0 }); 
                     console.log("we done")
                     this.done = true; 
                     
                     for(let i = 0; i < perm?.length; i++) {
-                        this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).weight = 1;
-                        this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]).active = 1;
+                        this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).weight = 1;
+                        this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id).active = 1;
                     }
                 }
             }
@@ -91,7 +93,7 @@ export default class SimpleAnt extends Method {
         // Start worker by posting the message with the cities
         this.worker.postMessage({
             // make copy of cities to prevent user writing into it during execution
-            cities: Object.values(this.app.map.nodes).map(n => n.getObj()),
+            cities: this.app.graph.getNodes(),
             num_ants: this.getSetting("num_ants"),
             max_duration: this.getSetting("max_duration"),
             amount_subtract: Math.pow(10,this.getSetting("amount_subtract"))

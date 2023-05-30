@@ -33,6 +33,7 @@ export default class Controls {
             }
         });
     }
+    
     updateContent() {
         this.dom.buttons.forEach(button => {
             if (button.className == "buttonSelect selected") {
@@ -41,14 +42,12 @@ export default class Controls {
                     this.tsp.forEach(obj => {
                         this.dom.content.append(obj.getHTMLElement());
                     })
-                    this.app.map.state = 'tsp'
                 }
                 else if (button.innerHTML.includes("Traffic")) {
                     this.dom.content.innerHTML = ""
                     this.traffic.forEach(obj => {
                         this.dom.content.append(obj.getHTMLElement());
                     })
-                    this.app.map.state = 'traffic'
                 }
             }
         })

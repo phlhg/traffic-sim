@@ -1,4 +1,4 @@
-/** Object representing a node on the map */
+/** Object representing a node on the graph */
 export default class Node {
 
     /**
@@ -24,42 +24,14 @@ export default class Node {
         /** @property {number} data.size - Size of the city */
         this.data.size = this.data.size ?? 100
 
-        this.dom = {}
-        this.setup();
-    }
-
-    setup(){
-        this.dom.node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        this.dom.node.setAttribute('cx', this.x)
-        this.dom.node.setAttribute('cy', this.y)
-        // TODO: How should cities be scaled depending on the size?
-        this.dom.node.setAttribute('r', 2 + (this.data.size / 1_000_000) * 13)
-        this.dom.node.setAttribute('class', `city`)
-
-        this.dom.title = document.createElementNS("http://www.w3.org/2000/svg", "title")
-        this.dom.title.innerHTML = `Node: ${this.id}\nPopulation: ${this.data.size.toLocaleString('de-CH')}`
-        this.dom.node.appendChild(this.dom.title)
     }
 
     /**
-     * Get the SVG element for the node.
-     * @returns {SVGElement} The SVG element.
+     * Clones the node
+     * @returns {Node} Returns a new clone of the node
      */
-    getHTMLElement(){
-        return this.dom.node;
-    }
-
-    /** 
-     * Returns a summary object of the node 
-     * @returns {Object} An object containg id, x and y
-     */
-    getObj(){
-        return {
-            id: this.id,
-            x: this.x,
-            y: this.y,
-            data: this.data
-        }
+    clone(){ 
+        return Object.assign(new Node(), this); 
     }
 
 }

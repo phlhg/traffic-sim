@@ -1,12 +1,10 @@
-import Edge from './edge';
-import Node from './node'
+import Graph from "./graph";
 
 export default class Map {
 
-    constructor(app,wrapper){
-        this.app = app;
+    constructor(app, wrapper){
 
-        this.state = 'tsp'
+        this.app = app;
 
         this.dom = {}
         this.dom.wrapper = wrapper;
@@ -33,7 +31,7 @@ export default class Map {
         this.dom.action_clear = this.dom.actions.querySelector(".clear");
 
         this.nodes = {};
-        this.edges = [];
+        this.edges = {};
 
         this.size = 0;
         this.scale = 1;
@@ -45,7 +43,6 @@ export default class Map {
 
         this.adjustSize();
         this.setEvents();
-        this.clear();
     }
 
     setEvents(){
@@ -54,7 +51,8 @@ export default class Map {
 
         this.dom.svg.addEventListener("click", (e) => {
             let coords = this.translateCoordinates(e.clientX, e.clientY);
-            this.addNode(coords.x, coords.y);
+            this.app.graph.addNode(coords.x, coords.y, Math.round(100 + Math.random() * 1_000_000));
+            this.update();
             e.preventDefault();
         })
 
@@ -65,7 +63,7 @@ export default class Map {
 
         this.dom.action_clear.addEventListener("click", async e => {
             await this.app.controls.stopMethods();
-            this.clear()
+            this.reset();
             e.preventDefault();
         })
 
@@ -73,34 +71,30 @@ export default class Map {
 
         this.dom.action_random.onmousedown = async e => {
             clearInterval(this.dom.action_random_interval);
-            this.addRandom(1);
-            this.dom.action_random_interval = setInterval(() => { this.addRandom(1); },200)
+            this.app.graph.addNode(Math.random() * 1000 - 500, Math.random() * 1000 - 500, Math.round(100 + Math.random() * 1_000_000))
+            this.update();
+            this.dom.action_random_interval = setInterval(() => { 
+                this.app.graph.addNode(Math.random() * 1000 - 500, Math.random() * 1000 - 500, Math.round(100 + Math.random() * 1_000_000)) 
+                this.update()
+            },200)
         }
         this.dom.action_random.ontouchstart = this.dom.action_random.onmousedown;
 
         this.dom.action_random.onmouseup = async e => {
             clearInterval(this.dom.action_random_interval);
         }
+        
         this.dom.action_random.ontouchend = this.dom.action_random.onmouseup;
         this.dom.action_random.ontouchcancel = this.dom.action_random.onmouseup;
 
     }
 
-    /** Clears & resets the map */
-    clear() {
-        this.nodes = {}
-        this.edges = []
-        this.dom.svg_nodes.innerHTML = '';
-        this.dom.svg_edges.innerHTML = '';
+    /** Resets the map */
+    reset(){
+        this.update(new Graph());
         this.scale = 1;
         this.adjustSize();
         this.dom.notice.classList.add("active");
-    }
-
-    addRandom(n){
-        for(let i = 0; i < n; i++){
-            this.addNode(Math.random() * 1000 - 500, Math.random() * 1000 - 500)
-        }
     }
 
     /** Adjusts the map viewport to the current window size */
@@ -146,87 +140,110 @@ export default class Map {
     }
 
     /**
-     * Adds a new node to the map.
-     * @param {number} x The internal x-coordinate of the new node
-     * @param {number} y The internal y-coordinate of the new node
-     * @returns {Node} The object of the new node
+     * Updates the map with an optional new graph
+     * @param {Graph} [graph] - The new graph (optional)
      */
-    addNode(x, y){
-        let id = Object.keys(this.nodes).length;
-        let node = new Node(id, x, y, { size: Math.round(100 + Math.random() * 1_000_000) });
-        this.dom.svg_nodes.appendChild(node.getHTMLElement());
+    update(graph){
 
-        this.edges[id] = {};
+        this.app.graph = graph ?? this.app.graph
 
-        Object.values(this.nodes).forEach(n => {
-            let edge = new Edge(n, node);
-            this.edges[n.id][id] = edge;
-            this.edges[id][n.id] = edge;
-            this.dom.svg_edges.appendChild(edge.getHTMLElement());
-        });
+        if(this.app.graph === null){ return; }
 
-        this.nodes[id] = node;
+        if(Object.keys(this.app.graph.nodes).length > 0){ this.dom.notice.classList.remove("active"); }
 
-        this.dom.notice.classList.remove("active");
+        // Update all nodes
+        this.app.graph.forNodes(node => {
 
-        return node;
-    }
+            // Create node element if does not exist yet
+            if(!this.nodes.hasOwnProperty(node.id)){
 
-    update(){
-        this.forEdges(e => { e.update(this.state) });
-    }
+                this.nodes[node.id] = {
+                    main: document.createElementNS("http://www.w3.org/2000/svg", "circle"),
+                    title: document.createElementNS("http://www.w3.org/2000/svg", "title")
+                }
 
-    /**
-     * Runs a function over all edges
-     * @param {Function} fn - Function, which takes an edge as an argument
-     */
-    forEdges(callback){
-        Object.keys(this.edges).forEach(id1 => {
-            let list = this.edges[id1];
-            Object.keys(list).forEach(id2 => {
-                if(id1 >= id2){ return; }
-                let edge = this.edges[id1][id2]; 
-                callback(edge);
-            })
+                this.nodes[node.id].main.setAttribute('class', `city`);
+                this.nodes[node.id].main.appendChild(this.nodes[node.id].title);
+
+                this.dom.svg_nodes.appendChild(this.nodes[node.id].main);
+
+            }
+
+            let element = this.nodes[node.id].main;
+            let title = this.nodes[node.id].title
+
+            element.setAttribute('cx', node.x)
+            element.setAttribute('cy', node.y)
+
+            // TODO: How should cities be scaled depending on the size?
+            element.setAttribute('r', 2 + (node.data.size / 1_000_000) * 13)
+
+            title.innerHTML = `Node: ${node.id}\nPopulation: ${node.data.size.toLocaleString('de-CH')}`
+
         })
-    }
 
-    /**
-     * Runs a function over all nodes
-     * @param {Function} fn - Function, which takes a node as an argument
-     */
-    forNodes(fn){
-        Object.values(this.nodes).forEach(n => { fn(n); })
-    }
+        // Remove unused nodes
+        let map_nodes = this.app.graph.getNodes().map(n => n.id);
+        Object.keys(this.nodes).forEach(nid => {
+            if(map_nodes.includes(parseInt(nid))){ return; }
+            this.nodes[nid].main.remove();
+            delete this.nodes[nid];
+        })
 
-    /**
-     * Returns the edge between two nodes
-     * @param {Node} a The first node
-     * @param {Node} b The second node
-     * @returns {Edge?} The object for the edge if it exists - null otherwise
-     */
-    getEdge(a,b){
-        let c = a.id < b.id ? a : b;
-        let d = a.id < b.id ? b : a;
-        if(!this.edges.hasOwnProperty(c.id) || !this.edges[c.id].hasOwnProperty(d.id)){ 
-            console.error(`Map: Edge ${c.id} <-> ${d.id} does not exist!`);
-            return null; 
-        }
-        return this.edges[c.id][d.id];
-    }
+        // Update all edges
+        this.app.graph.forEdges(edge => {
 
-    /**
-     * Returns the neighbouring nodes
-     * @param {Node} node The node for which one wants to know the neighbours
-     * @returns {Node[]} The list of neighbouring nodes - Returns an empty list if node has no neighbours or does not exists
-     */
-    getNeighbours(node){
-        if(!this.edges.hasOwnProperty(node.id)){ return []; }
-        return Object.keys(this.edges[node.id]).filter(id => {
-            return this.edges[node.id][id].active
-        }).map(id => {
-            return this.nodes[id]
-        });
+            let key = `${edge.origin}-${edge.target}`
+
+            // Create edge element if does not exist yet
+            if(!this.edges.hasOwnProperty(key)){
+                this.edges[key] = {
+                    main: document.createElementNS("http://www.w3.org/2000/svg", "line"),
+                    title: document.createElementNS("http://www.w3.org/2000/svg", "title")
+                }
+
+                this.edges[key].main.setAttribute('class', 'road');
+                this.edges[key].main.appendChild(this.edges[key].title);
+
+                this.dom.svg_edges.appendChild(this.edges[key].main);
+            }
+
+            let element = this.edges[key].main;
+            let title = this.edges[key].title;
+
+            let origin = this.app.graph.getNode(edge.origin);
+            let target = this.app.graph.getNode(edge.target);
+
+            element.setAttribute('x1', origin.x)
+            element.setAttribute('y1', origin.y)
+            element.setAttribute('x2', target.x)
+            element.setAttribute('y2', target.y)
+
+            if(this.app.problem == 'tsp'){
+                // TSP
+                element.style.opacity = edge.weight;
+                element.style.strokeWidth = 2;
+                title.innerHTML = `Weight: ${edge.weight}`
+            } else if(this.app.problem == 'traffic') {
+                element.style.opacity = edge.active ? 1 : 0;
+                // TODO: How should the width grow depending on the amount of traffic?
+                element.style.strokeWidth = (edge.traffic / 1_000_000) * 8
+                title.innerHTML = `Traffic: ${edge.traffic}`
+            } else {
+                element.style.opacity = edge.active ? 1 : 0;
+                element.style.strokeWidth = 1;
+            }
+
+        })
+
+        // Remove unused edges
+        let map_edges = this.app.graph.getEdges().map(e => `${e.origin}-${e.target}`);
+        Object.keys(this.edges).forEach(eid => {
+            if(map_edges.includes(eid)){ return; }
+            this.edges[eid].main.remove();
+            delete this.edges[eid];
+        })
+
     }
 
 }

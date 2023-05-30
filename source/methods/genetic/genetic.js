@@ -39,11 +39,11 @@ export default class Genetic extends Method {
 
     async run() {
 
-        let cities = Object.values(this.app.map.nodes).map(n => n.getObj());
-
         this.done = false;
 
-        this.app.map.forEdges(e => { 
+        this.app.problem = "tsp"
+
+        this.app.graph.forEdges(e => { 
             e.active = 0; 
             e.weight = 0; 
             e.traffic = 2000; 
@@ -59,9 +59,9 @@ export default class Genetic extends Method {
             let perm = e.data.value;
             this.addScore(e.data.score);
 
-            this.app.map.forEdges(e => { e.weight = 0; e.active=0});
+            this.app.graph.forEdges(e => { e.weight = 0; e.active=0});
             for(let i = 0; i < perm.length; i++) {
-                let edge = this.app.map.getEdge(perm[i],perm[(i+1)%perm.length])
+                let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)
                 edge.weight = 1;
                 edge.active = 1;
             }
@@ -74,7 +74,7 @@ export default class Genetic extends Method {
         // Start worker by posting the message with the cities
         this.worker.postMessage({
             // make copy of cities to prevent user writing into it during execution
-            cities: [...cities],
+            cities: this.app.graph.getNodes(),
             population: this.getSetting("population"),
             generations: this.getSetting("generations"),
             mutation: this.getSetting("mutation"),

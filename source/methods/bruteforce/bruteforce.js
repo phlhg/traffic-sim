@@ -18,14 +18,15 @@ export default class Bruteforce extends Method {
 
     async run(){
 
-        if(Object.values(this.app.map.nodes).length > 9){ Message.warning("Bruteforce with more than 9 cities will take some time"); }
+        if(this.app.graph.getNodes().length > 9){ Message.warning("Bruteforce with more than 9 cities will take some time"); }
 
         this.done = false;
 
-        this.app.map.forEdges(e => { 
-            e.active = 0; 
-            e.weight = 0; 
-            e.traffic = 2000; 
+        this.app.problem = "tsp"
+
+        this.app.graph.forEdges(e => { 
+            e.active = 1; 
+            e.weight = 1; 
         }); // Reset all edges
 
         let worker = WorkerManager.get("bruteforce");
@@ -39,24 +40,23 @@ export default class Bruteforce extends Method {
                 return;
             }
             
-            this.app.map.forEdges(e => { e.weight = 0; e.active=0});
+            this.app.graph.forEdges(e => { e.weight = 0; });
 
             let perm = e.data.value;
             for(let i = 0; i < perm.length; i++){
-                let edge = this.app.map.getEdge(perm[i],perm[(i+1)%perm.length]);
+                let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id);
                 edge.weight = 1;
-                edge.active = 1;
             }
-            
-            this.app.map.update();
 
             this.addScore(e.data.score);
 
             if(e.data.done){ this.done = true; }
+
+            this.app.map.update();
         }
 
         worker.postMessage({
-            cities: Object.values(this.app.map.nodes).map(n => n.getObj())
+            cities: this.app.graph.getNodes()
         });
 
         while(!this.done){ await sleep(100); }

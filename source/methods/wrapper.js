@@ -103,7 +103,7 @@ export default class MethodWrapper {
 
         await this.app.controls.stopMethods();
 
-        if(Object.values(this.app.map.nodes).length < 2){
+        if(this.app.graph.getNodes().length < 2){
             Message.info("Please add at least two cities before running an optimizer.", 2000);
             return false;
         }

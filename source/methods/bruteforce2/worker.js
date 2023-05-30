@@ -1,10 +1,10 @@
 import { length } from "../../map/utils";
 import { factorial, permute } from "../../utils";
 
-export default function worker_bruteforce(data){
+export default function worker_bruteforce2(data){
 
     var opt = Infinity;
-    var opt_perm = JSON.parse(data.map)
+    var opt_perm = data.graph
 
     console.log(opt_perm)
     return

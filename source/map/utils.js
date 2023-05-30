@@ -24,12 +24,12 @@ export function length(path){
 
 /**
  * Get the shortest paths between two nodes
- * @param {Map} map - The map object
+ * @param {Graph} graph - The graph object
  * @param {Node} origin - The start of the path
  * @param {number} limit - Maximal amount of iterations
  * @returns {Object.<number, Nodes[]>} - An object containing the shortest path for each node reached below the limit
  */
-export function shortestPaths(map, source, limit){
+export function shortestPaths(graph, source, limit){
 
     limit = limit ?? Infinity;
 
@@ -38,50 +38,48 @@ export function shortestPaths(map, source, limit){
     let previous = {};
     let nodes_done = [];
 
-    Object.values(map.nodes).forEach(n => {
+    graph.forNodes(n => {
         distance[n.id] = Infinity;
         previous[n.id] = null;
-        queue.push(n);
+        queue.push(n.id);
     });
 
-    distance[source.id] = 0;
+    distance[source] = 0;
 
     // dijkstra with limit
     while(queue.length > 0 && nodes_done.length < limit){
         // Get node with smallest distance in queue and remove it from queue
-        queue = queue.sort((a,b) => { return distance[a.id] - distance[b.id]; })
-        let u = queue.shift();
+        queue = queue.sort((a,b) => { return distance[a] - distance[b]; })
+        let u = graph.getNode(queue.shift());
 
         // Iterate over all neighbours still in queue
-        for(let v of map.getNeighbours(u)){
-            let e = map.getEdge(u, v);
-            let d = distance[u.id] + e.distance;
-            if(d < distance[v.id]){ // Check if new distance is smaller
-                distance[v.id] = d;
-                previous[v.id] = u;
-            }
+        for(let v of graph.getNeighbours(u.id).map(i => graph.getNode(i))){
+            let d = distance[u.id] + dist(u,v);
+            if(d >= distance[v.id]){ continue } // Check if new distance is smaller
+            distance[v.id] = d;
+            previous[v.id] = u.id;
         }
 
-        nodes_done.push(u);
+        nodes_done.push(u.id);
 
     }
 
     // Generate paths from previous
     let paths = {}
-    for(let node of nodes_done){
+    for(let nid of nodes_done){
 
-        if(node.id == source.id){ continue; } // Don't include path to source
+        if(nid == source){ continue; } // Don't include path to source
 
-        paths[node.id] = [];
-        let last = node
+        paths[nid] = [];
+        let last = nid
 
-        while(previous[last.id] != null){
-            paths[node.id].push(last);
-            last = previous[last.id];
+        while(previous[last] !== null){
+            paths[nid].push(last);
+            last = previous[last];
         }
 
-        paths[node.id].push(source)
-        paths[node.id].reverse();
+        paths[nid].push(source)
+        paths[nid].reverse();
 
     }
 
@@ -91,50 +89,51 @@ export function shortestPaths(map, source, limit){
 
 /**
  * Calculates the traffic on each ACTIVE edge inplace
- * @param {Map} map - A map object
+ * @param {Graph} graph - A graph object
  * @param {number} limit - The maximal amount of djikstra iterations 
  * @param {number} CONST_EDGE_COST - The cost an edge costs
  * @param {number} CONST_FAILURE_COST - The cost for STAU
  * @returns {number} sum - Returns the fitness function
  */
-export function calculateTraffic(map, limit, CONST_EDGE_COST=1, CONST_FAILURE_COST=10){
+export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_COST=10){
 
     // reset traffic
-    map.forEdges(e => { e.traffic = 0; })
+    graph.forEdges(e => { e.traffic = 0; })
 
     // iterate over all nodes
-    for(let source of Object.values(map.nodes)){
+    for(let source of graph.getNodes()){
 
         // sum up all endpoints sizes of cities and calculate fraction of
         // source city given this population sum
-        let paths = shortestPaths(map, source, limit);
-        let population = Object.keys(paths).map(id => map.nodes[id].data.size).reduce((a,b) => a + b);
+        let paths = shortestPaths(graph, source.id, limit);
+        let population = Object.keys(paths).map(id => graph.getNode(id).data.size).reduce((a,b) => a + b);
         let fraction = source.data.size / population; 
 
         for(let target_id of Object.keys(paths)){
 
-            let target = map.nodes[target_id];
+            let target = graph.getNode(target_id);
             let path = paths[target_id];
 
             for(let i = 0; i < path.length - 1; i++){
-                let edge = map.getEdge(path[i], path[i+1])
+                let edge = graph.getEdge(path[i], path[i+1])
                 edge.traffic += (target.data.size * fraction) 
             }
         }
     }
+    
     var sum = 0
 
-    map.forEdges( e => {
-        if (e.active) {
-            sum += CONST_EDGE_COST + e.width*e.distance/100 + e.traffic/10000
-            
-            // check if street is enough for traffic
-            let t = e.target.data.size
-            let o = e.origin.data.size
-            if (e.traffic > (t+o)*e.width)
-                sum += CONST_FAILURE_COST
+    graph.forEdges( e => {
+        if(!e.active) { return }
+        let distance = dist(graph.getNode(e.origin), graph.getNode(e.target))
+        sum += CONST_EDGE_COST + e.width*distance/100 + e.traffic/10000
+        
+        // check if street is enough for traffic
+        let t = graph.getNode(e.target).data.size
+        let o = graph.getNode(e.origin).data.size
+        if (e.traffic > (t+o)*e.width)
+            sum += CONST_FAILURE_COST
 
-        }
     });
 
     return sum;
