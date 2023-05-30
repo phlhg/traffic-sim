@@ -11,8 +11,10 @@ export default class Controls {
         this.dom.wrapper = wrapper;
 
         this.dom.wrapper.innerHTML = `
-            <div class="buttonSelect selected"><strong>TSP</strong></div>
-            <div class="buttonSelect"><strong>Traffic planning</strong></div>
+            <div class="selection">
+                <div class="buttonSelect selected"><strong>TSP</strong></div>
+                <div class="buttonSelect"><strong>Traffic planning</strong></div>
+            </div>
             <div class="content"></div>
         `
 
