@@ -1,7 +1,7 @@
 /**
  * Calculate the euclidian distance between two nodes
- * @param {*} a - The first node
- * @param {*} b - The second node
+ * @param {Node} a - The first node
+ * @param {Node} b - The second node
  * @returns {number} - The distance between the nodes
  */
 export function dist(a, b){
@@ -53,7 +53,7 @@ export function shortestPaths(graph, source, limit){
         let u = graph.getNode(queue.shift());
 
         // Iterate over all neighbours still in queue
-        for(let v of graph.getNeighbours(u.id).map(i => graph.getNode(i))){
+        for(let v of u.getNeighbours().map(i => graph.getNode(i))){
             let d = distance[u.id] + dist(u,v);
             if(d >= distance[v.id]){ continue } // Check if new distance is smaller
             distance[v.id] = d;
@@ -125,12 +125,11 @@ export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_
 
     graph.forEdges( e => {
         if(!e.active) { return }
-        let distance = dist(graph.getNode(e.origin), graph.getNode(e.target))
-        sum += CONST_EDGE_COST + e.data.width*distance/100 + e.data.traffic/10000
+        sum += CONST_EDGE_COST + e.data.width*e.distance()/100 + e.data.traffic/10000
         
         // check if street is enough for traffic
-        let t = graph.getNode(e.target).data.size
-        let o = graph.getNode(e.origin).data.size
+        let t = e.getTarget().data.size
+        let o = e.getOrigin().data.size
         if (e.data.traffic > (t+o)*e.data.width)
             sum += CONST_FAILURE_COST
 

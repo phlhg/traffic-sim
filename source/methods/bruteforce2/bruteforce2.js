@@ -63,7 +63,7 @@ export default class Bruteforce2 extends Method {
         }
 
         worker.postMessage({
-            graph: this.app.graph,
+            graph: this.app.graph.serialize(),
             max_duration: this.getSetting("max_duration"),
         });
 

@@ -24,14 +24,15 @@ export default class Graph {
      */
     addNode(x, y, size){
         let id = Object.keys(this.nodes).length;
-        let node = new Node(id, x, y, { size: size ?? 1000 });
+        let node = new Node(this, id, x, y);
+        node.data.size = size ?? 1000;
 
         this.edges[id] = {};
         this.nodes[id] = node;
 
         Object.keys(this.nodes).map(i => parseInt(i)).forEach(n => {
             if(n == id){ return; }
-            let edge = new Edge(n, id);
+            let edge = new Edge(this, n, id);
             this.edges[n][id] = edge;
             this.edges[id][n] = edge;
         });
@@ -105,13 +106,59 @@ export default class Graph {
     }
 
     /** 
+     * Get all edges from a node 
+     * @param {number} nid Id of the node
+     * @returns {Edge[]} An array of edges
+    */
+    getEdgesFrom(nid){
+        if(!this.edges.hasOwnProperty(nid)){ return []; }
+        return Object.values(this.edges[nid]).filter(e => e.active);
+    }
+
+    /** 
      * Returns the list of ids from neighbouring nodes
      * @param {number} nid The id of the node for which one wants to know the neighbours
      * @returns {number[]} The list of ids from neighbouring nodes - Returns an empty list if node has no neighbours or does not exists
      */
     getNeighbours(nid){
-        if(!this.edges.hasOwnProperty(nid)){ return []; }
-        return Object.keys(this.edges[nid]).filter(id => { return this.edges[nid][id].active })
+        return this.getEdgesFrom(nid).map(e => { return e.target == nid ? e.origin : e.target })
+    }
+
+    /** 
+     * Creats an object without cyclic references from the Graph for storing.
+     * @returns {Object} An object containing serialized the data of the Graph.
+     */
+    serialize(){
+        let g = { nodes: [], edges: [] }
+        this.forNodes(node => { g.nodes.push(node.serialize()) });
+        this.forEdges(edge => { g.edges.push(edge.serialize()) });
+        return g;
+    }
+
+    /**
+     * Create a graph from a serialized one.
+     * @param {object} g - The serialized data of the graph
+     * @see {@link Graph.prototype.serialize()} to get serialized graph data.
+     * @returns {Node} A new Graph containing the serialized data
+     */
+    static from(g){
+
+        let graph = new Graph();
+
+        g.nodes.forEach(n => {
+            let node = Node.from(graph, n); 
+            graph.nodes[node.id] = node;
+            graph.edges[node.id] = {}
+        })
+
+        g.edges.forEach(e => {
+            let edge = Edge.from(graph, e);
+            graph.edges[edge.origin][edge.target] = edge;
+            graph.edges[edge.target][edge.origin] = edge;
+        })
+
+        return graph;
+
     }
 
     /**
@@ -119,22 +166,7 @@ export default class Graph {
      * @returns {Graph} Returns a new (deep) clone of the graph
      */
     clone(){
-
-        let graph = new Graph();
-
-        this.forNodes(node => { 
-            graph.nodes[node.id] = node.clone(); 
-            graph.edges[node.id] = {};
-        })
-
-        this.forEdges(edge => { 
-            let clonedEdge = edge.clone();
-            graph.edges[edge.origin][edge.target] = clonedEdge;
-            graph.edges[edge.target][edge.origin] = clonedEdge;
-        })
-
-        return graph;
-
+        return Graph.from(this.serialize());
     }
 
 }
