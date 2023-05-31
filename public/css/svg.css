@@ -1,6 +1,8 @@
 svg .city {
     fill: #fff;
     z-index: 2;
+    stroke: #111;
+    stroke-width: 3;
 }
 
 svg .road {
