@@ -151,6 +151,8 @@ export default class Map {
 
         if(Object.keys(this.app.graph.nodes).length > 0){ this.dom.notice.classList.remove("active"); }
 
+        let maxSize = Math.max(...this.app.graph.getNodes().map(n => n.data.size));
+
         // Update all nodes
         this.app.graph.forNodes(node => {
 
@@ -175,8 +177,7 @@ export default class Map {
             element.setAttribute('cx', node.x)
             element.setAttribute('cy', node.y)
 
-            // TODO: How should cities be scaled depending on the size?
-            element.setAttribute('r', 2 + (node.data.size / 1_000_000) * 13)
+            element.setAttribute('r', 3 + 12 * (node.data.size / maxSize))
 
             title.innerHTML = `Node: ${node.id}\nPopulation: ${node.data.size.toLocaleString('de-CH')}`
 
@@ -189,6 +190,8 @@ export default class Map {
             this.nodes[nid].main.remove();
             delete this.nodes[nid];
         })
+
+        let maxTraffic = Math.max(...this.app.graph.getEdges().map(e => e.data.traffic));
 
         // Update all edges
         this.app.graph.forEdges(edge => {
@@ -226,8 +229,7 @@ export default class Map {
                 title.innerHTML = `Weight: ${edge.data.weight}`
             } else if(this.app.problem == 'traffic') {
                 element.style.opacity = edge.active ? 1 : 0;
-                // TODO: How should the width grow depending on the amount of traffic?
-                element.style.strokeWidth = (edge.data.traffic / 1_000_000) * 8
+                element.style.strokeWidth = 0.01 + 15 * edge.data.traffic / maxTraffic;
                 title.innerHTML = `Traffic: ${edge.data.traffic}`
             } else {
                 element.style.opacity = edge.active ? 1 : 0;
