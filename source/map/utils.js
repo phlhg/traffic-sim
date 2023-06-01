@@ -25,7 +25,7 @@ export function length(path){
 /**
  * Get the shortest paths between two nodes
  * @param {Graph} graph - The graph object
- * @param {Node} origin - The start of the path
+ * @param {Node} source - The start of the path
  * @param {number} limit - Maximal amount of iterations
  * @returns {Object.<number, Nodes[]>} - An object containing the shortest path for each node reached below the limit
  */
@@ -91,11 +91,11 @@ export function shortestPaths(graph, source, limit){
  * Calculates the traffic on each ACTIVE edge inplace
  * @param {Graph} graph - A graph object
  * @param {number} limit - The maximal amount of djikstra iterations 
- * @param {number} CONST_EDGE_COST - The cost an edge costs
- * @param {number} CONST_FAILURE_COST - The cost for STAU
+ * @param {number} init_edge_cost - The cost an edge costs
+ * @param {number} edge_cost - The cost for STAU
  * @returns {number} sum - Returns the fitness function
  */
-export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_COST=10){
+export function calculateTraffic(graph, limit, init_edge_cost=100, edge_cost=1){
 
     // reset traffic
     graph.forEdges(e => { e.data.traffic = 0; })
@@ -124,18 +124,42 @@ export function calculateTraffic(graph, limit, CONST_EDGE_COST=1, CONST_FAILURE_
     var sum = 0
 
     graph.forEdges( e => {
-        if(!e.active) { return }
-        sum += CONST_EDGE_COST + e.data.width*e.distance()/100 + e.data.traffic/10000
-        
-        // check if street is enough for traffic
-        let t = e.getTarget().data.size
-        let o = e.getOrigin().data.size
-        if (e.data.traffic > (t+o)*e.data.width)
-            sum += CONST_FAILURE_COST
-
+        if(!e.active) { return; }
+        sum += init_edge_cost + edge_cost*(e.distance()/1_000)*(e.data.traffic/1_000);
     });
 
     return sum;
 
 }
 
+/**
+ * Checks whether a given graph is connected or not.
+ * @param {Graph} graph - Graph to check
+ * @returns {boolean} True if the graph is connected, false otherwise
+ */
+export function isConnected(graph){
+
+    let visited = {};
+    graph.forNodes(n => { visited[n.id] = false; })
+
+    let queue = [];
+
+    let root = graph.getNodes()[0];
+    visited[root.id]
+    queue.push(root.id);
+
+    while(queue.length > 0){
+
+        let node = graph.getNode(queue.shift());
+
+        for(let nid of node.getNeighbours()){
+            if(visited[nid]){ continue; }
+            visited[nid] = true;
+            queue.push(nid);
+        }
+
+    }
+
+    return Object.values(visited).reduce((a,b) => a && b, true);
+
+}

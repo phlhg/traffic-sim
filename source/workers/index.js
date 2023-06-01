@@ -2,7 +2,7 @@ import worker_bruteforce from "../methods/bruteforce/worker";
 import worker_simpleant from "../methods/simpleant/worker";
 import worker_genetic from "../methods/genetic/worker";
 import WorkerManager from "./manager";
-import worker_bruteforce2 from "../methods/bruteforce2/worker";
+import worker_traffic_bruteforce from "../methods/trafficbruteforce/worker";
 
 const manager = new WorkerManager();
 
@@ -20,7 +20,7 @@ manager.add("genetic", worker_genetic);
 // Traffic
 
 // - Bruteforce
-manager.add("bruteforce2", worker_bruteforce2)
+manager.add("traffic_bruteforce", worker_traffic_bruteforce)
 
 onmessage = e => {
     manager.call(e.data.handler, e.data.data);
