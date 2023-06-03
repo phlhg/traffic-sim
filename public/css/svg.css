@@ -1,9 +1,22 @@
+svg * { transform-box: fill-box; transform-origin: 50% 50%; }
+
+svg .city {
+    transition: transform 200ms ease-in-out;
+}
+
 svg .city {
     fill: #fff;
     z-index: 2;
     stroke: #111;
     stroke-width: 3;
+    cursor: grab;
+
+    transform: scale(1);
+    transform-origin: 50% 50%;
 }
+
+svg .city:hover { transform: scale(1.1); }
+svg .city.dragging { cursor: grabbing; transform: scale(1.2); }
 
 svg .road {
     stroke: #ccc;

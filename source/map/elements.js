@@ -15,13 +15,14 @@ export class NodeElement {
         this.dom.root = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         this.dom.title = document.createElementNS("http://www.w3.org/2000/svg", "title");
 
-        this.dom.root.setAttribute('class', `city`);
+        this.dom.root.classList.add(`city`);
         this.dom.root.appendChild(this.dom.title);
 
         this.dom.root.onclick = e => { e.stopPropagation(); }
 
         this.dom.root.onmousedown = e => {
             this.dragging = true;
+            this.dom.root.classList.add(`dragging`);
             e.stopPropagation();
         }
 
@@ -37,6 +38,7 @@ export class NodeElement {
 
         this.dom.root.onmouseup = e => {
             this.dragging = false;
+            this.dom.root.classList.remove(`dragging`);
             e.stopPropagation();
         }
 
