@@ -4,6 +4,15 @@ import WorkerManager from "../../workers/manager";
 import Method from "../method"
 import { SliderSetting } from "../settings";
 
+function *p(arr, acc, depth){
+    if(depth < 1 || arr.length < 1){ 
+        yield { remaining: arr, prefix: acc }; 
+    } else {
+        yield* p(arr.slice(1), acc, depth - 1);
+        yield* p(arr.slice(1), acc.concat([arr[0]]), depth - 1);
+    }
+}
+
 export default class TrafficBruteforce extends Method {
 
     constructor(...data){
@@ -15,7 +24,8 @@ export default class TrafficBruteforce extends Method {
 
         this.addSetting("num_workers", SliderSetting, {
             name: "Number of Workers",
-            min: 1, max: 64, value: 8
+            min: 0, max: 6, value: 3, 
+            formatter: v => { return `${Math.pow(2, v)}`}
         })
 
         this.done = [];
@@ -37,9 +47,10 @@ export default class TrafficBruteforce extends Method {
 
         let opt_score = Infinity;
 
-        let num_workers = this.getSetting("num_workers").value;
+        let edges = this.app.graph.getEdges().map(e => [e.origin, e.target]);
+        let pool = Array.from(p(edges, [], this.getSetting("num_workers")));
 
-        let workers = (new Array(num_workers).fill()).map(i => { return WorkerManager.get("traffic_bruteforce") });
+        let workers = pool.map(i => { return WorkerManager.get("traffic_bruteforce") });
         let progress = workers.map(i => 0);
         this.done = workers.map(i => false);
 
@@ -72,9 +83,10 @@ export default class TrafficBruteforce extends Method {
 
         for(let i = 0; i < workers.length; i++){
             workers[i].postMessage({
-                graph: this.app.graph.serialize(),
                 worker_id: i,
-                worker_cnt: workers.length
+                graph: this.app.graph.serialize(),
+                edges_prefix: pool[i].prefix,
+                edges_remain: pool[i].remaining
             })
         }
 

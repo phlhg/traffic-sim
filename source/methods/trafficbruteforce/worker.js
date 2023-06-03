@@ -10,25 +10,21 @@ function* p(arr, acc){
     }
 }
 
-function permute(arr){ return p(arr,[]) }
-
 export default function worker_traffic_bruteforce(data){
 
     let graph = Graph.from(data.graph);
-    let worker_cnt = data.worker_cnt;
     let worker_id = data.worker_id;
+
+    let edges_prefix = data.edges_prefix;
+    let edges_remain = data.edges_remain;
 
     let opt = Infinity;
 
-    let edges = graph.getEdges().map(e => [e.origin, e.target]);
-
-    let perm_gen = permute(edges);
+    let perm_gen = p(edges_remain, edges_prefix);
     let perm = perm_gen.next();
     
-    let progress_max = Math.floor(Math.pow(2, edges.length) / worker_cnt);
+    let progress_max = Math.floor(Math.pow(2, edges_remain.length));
     let progress_cnt = 0;
-
-    for(let i = 0; i < worker_id; i++){ perm = perm_gen.next(); } // Skip permutations handled by other workers
 
     progress_cnt += worker_id;
 
@@ -48,11 +44,11 @@ export default function worker_traffic_bruteforce(data){
 
         }
 
-        for(let i = 0; i < worker_cnt; i++){ perm = perm_gen.next(); } // Skip permutations handled by other workers
+        perm = perm_gen.next();
 
         progress_cnt++;
 
-        if(progress_cnt % 100 == worker_id){
+        if(progress_cnt % 100 == 0){ 
             postMessage({ progress: Math.min(1, progress_cnt / progress_max)});
         }
 
