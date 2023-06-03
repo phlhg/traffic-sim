@@ -21,28 +21,10 @@ export class NodeElement {
         this.dom.root.onclick = e => { e.stopPropagation(); }
 
         this.dom.root.onmousedown = e => {
-            this.dragging = true;
+            this.map.dragging = this.id;
             this.dom.root.classList.add(`dragging`);
             e.stopPropagation();
         }
-
-        this.dom.root.onmousemove = e => {
-            if(!this.dragging){ return; }
-            let coords = this.map.translateCoordinates(e.clientX, e.clientY);
-            let node = this.app.graph.getNode(this.id);
-            node.x = coords.x;
-            node.y = coords.y;
-            this.map.update();
-            e.stopPropagation();
-        }
-
-        this.dom.root.onmouseup = e => {
-            this.dragging = false;
-            this.dom.root.classList.remove(`dragging`);
-            e.stopPropagation();
-        }
-
-        this.dom.root.onmouseleave = this.dom.root.onmouseup;
 
     }
 

@@ -42,6 +42,8 @@ export default class Map {
         this.pos.left = - this.pos.width / 2
         this.pos.top = - this.pos.height / 2
 
+        this.dragging = null;
+
         this.adjustSize();
         this.setEvents();
     }
@@ -87,6 +89,27 @@ export default class Map {
         
         this.dom.action_random.ontouchend = this.dom.action_random.onmouseup;
         this.dom.action_random.ontouchcancel = this.dom.action_random.onmouseup;
+
+        // Dragging
+
+        this.dom.svg.onmousemove = e => {
+            if(this.dragging == null){ return; }
+            let coords = this.translateCoordinates(e.clientX, e.clientY);
+            let node = this.app.graph.getNode(this.dragging);
+            node.x = coords.x;
+            node.y = coords.y;
+            this.update();
+            e.stopPropagation();
+        }
+
+        this.dom.svg.onmouseup = e => {
+            if(this.dragging == null){ return; }
+            this.nodes[this.dragging].dom.root.classList.remove(`dragging`);
+            this.dragging = null;
+            e.stopPropagation();
+        }
+
+        this.dom.svg.onmouseleave = this.dom.svg.onmouseup;
 
     }
 
