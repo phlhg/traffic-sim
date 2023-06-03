@@ -1,3 +1,4 @@
+import { EdgeElement, NodeElement } from "./elements";
 import Graph from "./graph";
 
 export default class Map {
@@ -49,7 +50,7 @@ export default class Map {
 
         window.addEventListener("resize", this.adjustSize.bind(this));
 
-        this.dom.svg.addEventListener("click", (e) => {
+        this.dom.svg.addEventListener("mousedown", (e) => {
             let coords = this.translateCoordinates(e.clientX, e.clientY);
             this.app.graph.addNode(coords.x, coords.y, Math.round(100 + Math.random() * 1_000_000));
             this.update();
@@ -158,28 +159,11 @@ export default class Map {
 
             // Create node element if does not exist yet
             if(!this.nodes.hasOwnProperty(node.id)){
-
-                this.nodes[node.id] = {
-                    main: document.createElementNS("http://www.w3.org/2000/svg", "circle"),
-                    title: document.createElementNS("http://www.w3.org/2000/svg", "title")
-                }
-
-                this.nodes[node.id].main.setAttribute('class', `city`);
-                this.nodes[node.id].main.appendChild(this.nodes[node.id].title);
-
-                this.dom.svg_nodes.appendChild(this.nodes[node.id].main);
-
+                this.nodes[node.id] = new NodeElement(this, node.id);
+                this.dom.svg_nodes.appendChild(this.nodes[node.id].get());
             }
 
-            let element = this.nodes[node.id].main;
-            let title = this.nodes[node.id].title
-
-            element.setAttribute('cx', node.x)
-            element.setAttribute('cy', node.y)
-
-            element.setAttribute('r', 3 + 12 * (node.data.size / maxSize))
-
-            title.innerHTML = `Node: ${node.id}\nPopulation: ${node.data.size.toLocaleString('de-CH')}`
+            this.nodes[node.id].update(maxSize);
 
         })
 
@@ -187,7 +171,7 @@ export default class Map {
         let map_nodes = this.app.graph.getNodes().map(n => n.id);
         Object.keys(this.nodes).forEach(nid => {
             if(map_nodes.includes(parseInt(nid))){ return; }
-            this.nodes[nid].main.remove();
+            this.nodes[nid].remove();
             delete this.nodes[nid];
         })
 
@@ -200,42 +184,11 @@ export default class Map {
 
             // Create edge element if does not exist yet
             if(!this.edges.hasOwnProperty(key)){
-                this.edges[key] = {
-                    main: document.createElementNS("http://www.w3.org/2000/svg", "line"),
-                    title: document.createElementNS("http://www.w3.org/2000/svg", "title")
-                }
-
-                this.edges[key].main.setAttribute('class', 'road');
-                this.edges[key].main.appendChild(this.edges[key].title);
-
-                this.dom.svg_edges.appendChild(this.edges[key].main);
+                this.edges[key] = new EdgeElement(this, edge.origin, edge.target)
+                this.dom.svg_edges.appendChild(this.edges[key].get());
             }
 
-            let element = this.edges[key].main;
-            let title = this.edges[key].title;
-
-            let origin = this.app.graph.getNode(edge.origin);
-            let target = this.app.graph.getNode(edge.target);
-
-            element.setAttribute('x1', origin.x)
-            element.setAttribute('y1', origin.y)
-            element.setAttribute('x2', target.x)
-            element.setAttribute('y2', target.y)
-
-            if(this.app.problem == 'tsp'){
-                // TSP
-                element.style.opacity = edge.data.weight;
-                element.style.strokeWidth = 2;
-                title.innerHTML = `Weight: ${edge.data.weight}`
-            } else if(this.app.problem == 'traffic') {
-                element.style.opacity = edge.active ? 1 : 0;
-                element.style.strokeWidth = 0.01 + 15 * edge.data.traffic / maxTraffic;
-                title.innerHTML = `Traffic: ${edge.data.traffic}`
-            } else {
-                element.style.opacity = edge.active ? 1 : 0;
-                element.style.strokeWidth = 1;
-                title.innerHTML = ``
-            }
+            this.edges[key].update(maxTraffic);
 
         })
 
@@ -243,7 +196,7 @@ export default class Map {
         let map_edges = this.app.graph.getEdges().map(e => `${e.origin}-${e.target}`);
         Object.keys(this.edges).forEach(eid => {
             if(map_edges.includes(eid)){ return; }
-            this.edges[eid].main.remove();
+            this.edges[eid].remove();
             delete this.edges[eid];
         })
 
