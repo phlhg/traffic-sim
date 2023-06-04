@@ -5,7 +5,6 @@ export class NodeElement {
         this.map = map;
 
         this.id = id;
-        this.dragging = false;
 
         this.dom = {};
         this.setup();
@@ -18,11 +17,12 @@ export class NodeElement {
         this.dom.root.classList.add(`city`);
         this.dom.root.appendChild(this.dom.title);
 
-        this.dom.root.onclick = e => { e.stopPropagation(); }
-
         this.dom.root.onmousedown = e => {
-            this.map.dragging = this.id;
+            this.map.dragging.id = this.id;
+            this.map.dragging.init_x = e.clientX;
+            this.map.dragging.init_y = e.clientY;
             this.dom.root.classList.add(`dragging`);
+            this.map.editor.hide();
             e.stopPropagation();
         }
 
