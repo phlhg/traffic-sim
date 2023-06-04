@@ -9,7 +9,7 @@ svg .city {
     z-index: 2;
     stroke: #111;
     stroke-width: 3;
-    cursor: grab;
+    cursor: pointer;
 
     transform: scale(1);
     transform-origin: 50% 50%;

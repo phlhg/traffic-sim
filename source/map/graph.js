@@ -6,13 +6,13 @@ export default class Graph {
 
     constructor(){
         this.nodes = {};
-        this.edges = [];
+        this.edges = {};
     }
 
     /** Clears the graph */
     clear() {
-        this.nodes = {}
-        this.edges = []
+        this.nodes = {};
+        this.edges = {};
     }
 
     /**
@@ -23,7 +23,7 @@ export default class Graph {
      * @returns {Node} The object of the new node
      */
     addNode(x, y, size){
-        let id = Object.keys(this.nodes).length;
+        let id = Math.max(...Object.keys(this.nodes).map(i => parseInt(i)).concat([-1])) + 1;
         let node = new Node(this, id, x, y);
         node.data.size = size ?? 1000;
 
@@ -38,6 +38,19 @@ export default class Graph {
         });
 
         return node;
+    }
+
+    /**
+     * Remove a node from the graph
+     * @param {number} id - Id of the node to remove
+     * @returns {boolean} True if the node was removed sucessfully else false
+     */
+    removeNode(id){
+        if(!this.nodes.hasOwnProperty(id)){ return false; }
+        delete this.nodes[id];
+        delete this.edges[id];
+        Object.keys(this.nodes).map(i => parseInt(i)).forEach(i => { delete this.edges[i][id]; })
+        return true;
     }
 
     /** 
@@ -86,7 +99,7 @@ export default class Graph {
      * @returns {Node?} The object for the node if it exists, otherwise null
      */
     getNode(id){
-        if(!(id in Object.keys(this.nodes))){ return null; }
+        if(!this.nodes.hasOwnProperty(id)){ return null; }
         return this.nodes[id]
     }
 

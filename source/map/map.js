@@ -1,3 +1,4 @@
+import Editor from "./editor";
 import { EdgeElement, NodeElement } from "./elements";
 import Graph from "./graph";
 
@@ -42,7 +43,13 @@ export default class Map {
         this.pos.left = - this.pos.width / 2
         this.pos.top = - this.pos.height / 2
 
-        this.dragging = null;
+        this.dragging = {};
+        this.dragging.id = null;
+        this.dragging.init_x = 0;
+        this.dragging.init_y = 0;
+
+        this.editor = new Editor(this);
+        this.dom.wrapper.appendChild(this.editor.get())
 
         this.adjustSize();
         this.setEvents();
@@ -53,7 +60,8 @@ export default class Map {
         window.addEventListener("resize", this.adjustSize.bind(this));
 
         this.dom.svg.addEventListener("mousedown", (e) => {
-            let coords = this.translateCoordinates(e.clientX, e.clientY);
+            if(this.editor.id !== null){ this.editor.hide(); return; }
+            let coords = this.getMapCoordinates(e.clientX, e.clientY);
             this.app.graph.addNode(coords.x, coords.y, Math.round(100 + Math.random() * 1_000_000));
             this.update();
             e.preventDefault();
@@ -93,9 +101,9 @@ export default class Map {
         // Dragging
 
         this.dom.svg.onmousemove = e => {
-            if(this.dragging == null){ return; }
-            let coords = this.translateCoordinates(e.clientX, e.clientY);
-            let node = this.app.graph.getNode(this.dragging);
+            if(this.dragging.id == null){ return; }
+            let coords = this.getMapCoordinates(e.clientX, e.clientY);
+            let node = this.app.graph.getNode(this.dragging.id);
             node.x = coords.x;
             node.y = coords.y;
             this.update();
@@ -103,9 +111,11 @@ export default class Map {
         }
 
         this.dom.svg.onmouseup = e => {
-            if(this.dragging == null){ return; }
-            this.nodes[this.dragging].dom.root.classList.remove(`dragging`);
-            this.dragging = null;
+            if(this.dragging.id == null){ return; }
+            let dist = Math.sqrt(Math.pow(e.clientX - this.dragging.init_x, 2) + Math.pow(e.clientY - this.dragging.init_y, 2));
+            if(dist <= 20){ this.editor.show(this.dragging.id); }
+            this.nodes[this.dragging.id].dom.root.classList.remove(`dragging`);
+            this.dragging.id = null;
             e.stopPropagation();
         }
 
@@ -115,6 +125,7 @@ export default class Map {
 
     /** Resets the map */
     reset(){
+        this.editor.hide();
         this.update(new Graph());
         this.scale = 1;
         this.adjustSize();
@@ -139,6 +150,8 @@ export default class Map {
         this.pos.top = - this.pos.height / 2
 
         this.dom.svg.setAttribute('viewBox', `${this.pos.left} ${this.pos.top} ${this.pos.width} ${this.pos.height}`)
+
+        this.editor.update();
     }
 
     zoom(direction){
@@ -150,16 +163,30 @@ export default class Map {
     }
 
     /**
-     * Transform the document coordinates to internal coordinates
+     * Transform the document coordinates to map coordinates
      * @param {number} x The document x-coordinate (e.g. `e.clientX`)
      * @param {number} y The document x-coordinate (e.g. `e.clientY`)
      * @returns {object} An object containing the internal x & y coordinates
      */
-    translateCoordinates(x,y){
+    getMapCoordinates(x,y){
         let rect = this.dom.svg.getBoundingClientRect();
         return {
             x: (x - rect.left) / rect.width * this.pos.width + this.pos.left, 
             y: (y - rect.top) / rect.height * this.pos.height + this.pos.top
+        }
+    }
+
+    /**
+     * Transform the map coordinates to document coordinates
+     * @param {number} x The map x-coordinate (e.g. `node.x`)
+     * @param {number} y The map x-coordinate (e.g. `node.y`)
+     * @returns {object} An object containing the internal x & y coordinates
+     */
+    getDocumentCoordinates(x,y){
+        let rect = this.dom.svg.getBoundingClientRect();
+        return {
+            x: (x - this.pos.left) / this.pos.width * rect.width + rect.left,
+            y: (y - this.pos.top) / this.pos.height * rect.height + rect.top
         }
     }
 
@@ -173,7 +200,7 @@ export default class Map {
 
         if(this.app.graph === null){ return; }
 
-        if(Object.keys(this.app.graph.nodes).length > 0){ this.dom.notice.classList.remove("active"); }
+        this.dom.notice.classList.toggle("active", this.app.graph.getNodes().length <= 0);
 
         let maxSize = Math.max(...this.app.graph.getNodes().map(n => n.data.size));
 
