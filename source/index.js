@@ -4,6 +4,7 @@ import SimpleAnt from "./methods/simpleant/simpleant";
 import Genetic from "./methods/genetic/genetic";
 import Routing from "./methods/routing/routing";
 import TrafficBruteforce from "./methods/trafficbruteforce/bruteforce2";
+import TrafficGenetic from "./methods/trafficgenetic/genetic2";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -15,4 +16,5 @@ document.addEventListener('DOMContentLoaded', () => {
     app.controls.addMethod(Genetic)
     app.controls.addMethod(Routing,1);
     app.controls.addMethod(TrafficBruteforce,1);
+    app.controls.addMethod(TrafficGenetic, 1);
 })

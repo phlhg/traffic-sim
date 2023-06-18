@@ -1,9 +1,9 @@
-import { length } from "../../map/utils";
-import {permute, sleep} from "../../utils"
 import Individual from "./individual";
+import Graph from "../../map/graph"
+import { calculateTraffic, isConnected } from "../../map/utils";
 
-export default function worker_genetic(data) {
-    var cities = data.cities;
+export default function worker_traffic_genetic(data) {
+
     // Max time to run one worker in milliseconds
     var GENERATIONS = data.generations;
     var CROSSOVER = data.crossover
@@ -11,13 +11,10 @@ export default function worker_genetic(data) {
     // create population
     let pop = [];
     
-    var perm_gen = permute(data.cities);
-    var perm = perm_gen.next();
-    
     // everyone gets the same path to start
     // otherwise we run into errors with popsize > perms(path)
     for (let i = 0; i < data.population; i++) {
-        pop.push(new Individual(perm.value, data.mutation, cities))
+        pop.push(new Individual(data.graph, data.mutation))
     }
 
     pop.sort((a, b) => (a.fitness > b.fitness)? 1 : -1)
@@ -32,20 +29,27 @@ export default function worker_genetic(data) {
             while (index == i)
                 index = Math.floor(Math.random() * data.population/4);
 
-            if (CROSSOVER)
-                Individual.crossover(pop[i], pop[index], perm_gen.length)
+            if (CROSSOVER) 
+                Individual.crossover(pop[i], pop[index])
+            
         }
 
         // mutate all 
         for (let i = 1; i < data.population; i++) {
             pop[i].mutate()
+
+            while(!isConnected(pop[i].graph))
+                pop[i].mutate()
+            
+            pop[i].fitness = calculateTraffic(pop[i].graph)
+
         }
 
         // sort and find best
         pop.sort((a, b) => (a.fitness > b.fitness)? 1 : -1)
 
         postMessage({
-            value: pop[0].path,
+            graph: pop[0].graph.serialize(),
             score: pop[0].fitness,
             done: false
         });
@@ -53,7 +57,7 @@ export default function worker_genetic(data) {
     }
 
     postMessage({
-        value: pop[0].path,
+        graph: pop[0].graph.serialize(),
         score: pop[0].fitness,
         done: true
     });

@@ -2,8 +2,9 @@ import { sleep } from "../../utils";
 import WorkerManager from "../../workers/manager";
 import Method from "../method"
 import { SliderSetting, BooleanSetting } from "../settings";
+import Graph from "../../map/graph";
 
-export default class Genetic extends Method {
+export default class TrafficGenetic extends Method {
 
     constructor(...data) {
         super(...data);
@@ -11,7 +12,7 @@ export default class Genetic extends Method {
         this.worker = null;
 
         this.name = "GeneticAlgorithm";
-        this.description = "Path optimization using a variation of genetic algorithm";
+        this.description = "Traffic optimization using a variation of genetic algorithm";
 
         this.addSetting("population", SliderSetting, { 
             name: "Population",
@@ -41,40 +42,38 @@ export default class Genetic extends Method {
 
         this.done = false;
 
-        this.app.problem = "tsp"
+        this.app.problem = "traffic"
 
         this.app.graph.forEdges(e => { 
-            e.active = 0; 
+            e.active = true; 
+            e.data.width = 0;
             e.data.weight = 0; 
-            e.data.traffic = 2000; 
+            e.data.traffic = 0; 
         }); // Reset all edges
 
-        this.worker = WorkerManager.get("genetic");
+        this.worker = WorkerManager.get("traffic_genetic");
+        let opt_score = Infinity;
 
         // callback function, "status", e.g the current permutation
         this.worker.onmessage = e => {
 
             if(this.done){ return; }
 
-            let perm = e.data.value;
-            this.addScore(e.data.score);
-
-            this.app.graph.forEdges(e => { e.data.weight = 0; e.active=0});
-            for(let i = 0; i < perm.length; i++) {
-                let edge = this.app.graph.getEdge(perm[i].id,perm[(i+1)%perm.length].id)
-                edge.data.weight = 1;
-                edge.active = 1;
+            if (opt_score > e.data.score) {
+                let graph = Graph.from(e.data.graph);
+                this.addScore(e.data.score);
+                this.app.map.update(graph);
+                opt_score = e.data.score;
             }
 
             if(e.data.done) { this.done = true; }
 
-            this.app.map.update();
         }
 
         // Start worker by posting the message with the cities
         this.worker.postMessage({
             // make copy of cities to prevent user writing into it during execution
-            cities: this.app.graph.getNodes(),
+            graph: this.app.graph.serialize(),
             population: this.getSetting("population"),
             generations: this.getSetting("generations"),
             mutation: this.getSetting("mutation"),
@@ -90,6 +89,5 @@ export default class Genetic extends Method {
     async stop() {
         this.done = true;
     }
-
 
 }
