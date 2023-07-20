@@ -6,6 +6,7 @@ import Routing from "./methods/routing/routing";
 import TrafficBruteforce from "./methods/trafficbruteforce/bruteforce2";
 import TrafficAnt from "./methods/trafficant/trafficant";
 import TrafficGenetic from "./methods/trafficgenetic/genetic2";
+import Simulated from "./methods/simulated/simulated";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     app.controls.addMethod(Bruteforce);
     app.controls.addMethod(SimpleAnt);
     app.controls.addMethod(Genetic)
+    app.controls.addMethod(Simulated)
     // app.controls.addMethod(Routing,1);
     app.controls.addMethod(TrafficBruteforce,1);
     app.controls.addMethod(TrafficAnt, 1);
