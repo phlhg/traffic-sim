@@ -22,17 +22,26 @@ export default class Score {
     }
 
     setup(){
-        this.dom.svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-        this.dom.svg.setAttribute('viewBox', `0 0 500 100`);
-        this.dom.svg.classList.add("empty");
 
-        this.dom.path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        this.dom.path.setAttribute("d","");
+        this.dom.root = document.createElement("div");
+        this.dom.root.classList.add("score-container");
+        this.dom.root.classList.add("empty");
+
+        this.dom.root.innerHTML = `
+            <a><span class="material-symbols-outlined">download</span></a>
+            <svg viewBox="0 0 500 100">
+                <path d=""/>
+            </svg>
+        `
+
+        this.dom.download = this.dom.root.querySelector("a");
+        this.dom.svg = this.dom.root.querySelector("svg")
+        this.dom.path = this.dom.root.querySelector("svg > path")
+
         this.dom.path.style.fill = "none";
         this.dom.path.style.stroke = "#fff";
         this.dom.path.style.strokeWidth = "1";
         this.dom.path.style.strokeLinecap = "round";
-        this.dom.svg.appendChild(this.dom.path);
 
     }
 
@@ -41,11 +50,11 @@ export default class Score {
 
         if(this.scores.length <= 1){ 
             this.dom.path.setAttribute("d", "");
-            this.dom.svg.classList.add("empty");
+            this.dom.root.classList.add("empty");
             return; 
         }
 
-        this.dom.svg.classList.remove("empty");
+        this.dom.root.classList.remove("empty");
         
         let max = Math.max(...this.scores.map(s => { return s.value }))
         let min = Math.min(...this.scores.map(s => { return s.value }))
@@ -67,6 +76,11 @@ export default class Score {
 
         this.dom.path.setAttribute("d", d);
 
+        let content = this.scores.map(item => { return `${item.time-start},${item.value}\n` }).join("")
+        this.dom.download.href = URL.createObjectURL(new Blob([content], { type: 'text/csv' }));
+
+        let s = new Date(start);
+        this.dom.download.setAttribute("download", `${s.getFullYear()}-${dd(s.getMonth()+1)}-${dd(s.getDate())}-${dd(s.getHours())+dd(s.getMinutes())+dd(s.getSeconds())}-data.csv`)
     }
 
     add(value){
@@ -81,9 +95,11 @@ export default class Score {
 
 
     getHTMLElement(){
-        return this.dom.svg;
+        return this.dom.root;
     }
 
+}
 
-
+function dd(n){
+    return ("0"+n).slice(-2)
 }
