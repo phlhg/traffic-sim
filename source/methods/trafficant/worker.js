@@ -1,15 +1,6 @@
 import Graph from "../../map/graph";
 import { calculateTraffic, isConnected } from "../../map/utils";
 
-function shuffle(arr){
-    for(let i = 0; i < arr.length; i++){
-        let j = Math.floor(Math.random() * (arr.length + 1))
-        let temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-    return arr;
-}
 
 function getRandom(graph, pheromones) {
 
@@ -20,7 +11,7 @@ function getRandom(graph, pheromones) {
 
         graph.forEdges(edge => { 
             if(pheromones.hasOwnProperty(edge.id)){
-                edge.active = (pheromones[edge.id] - pheromin) / (pheromax - pheromin) * 0.6 + 0.2 > Math.random();
+                edge.active = (pheromones[edge.id] - pheromin) / (pheromax - pheromin) * 0.5 + 0.25 > Math.random();
             } else {
                 edge.active = 0.5 > Math.random();
             }
