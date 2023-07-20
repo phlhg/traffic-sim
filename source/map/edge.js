@@ -19,6 +19,9 @@ export default class Edge {
         /** @property {number} origin - The id of node at the traget */
         this.target = target;
 
+        /** @property {number} origin - The id of node at the traget */
+        this.id = `${this.origin}-${this.target}`;
+
         /** @property {boolean} active - Indicates if the egde can be used */
         this.active = false;
 

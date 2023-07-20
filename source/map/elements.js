@@ -89,8 +89,10 @@ export class EdgeElement {
             this.dom.root.style.strokeWidth = 2;
             this.dom.title.innerHTML = `Weight: ${edge.data.weight}`
         } else if(this.app.problem == 'traffic') {
-            this.dom.root.style.opacity = edge.active ? 1 : 0;
-            this.dom.root.style.strokeWidth = 0.01 + 15 * edge.data.traffic / maxTraffic;
+            this.dom.root.style.opacity = edge.active ? 1 : edge.data.weight;
+            this.dom.root.style.strokeWidth = 2 + 15 * edge.data.traffic / maxTraffic;
+            this.dom.root.style.strokeDasharray = edge.data.weight > 0 && edge.data.traffic == 0 ? 4 : 0;
+            this.dom.root.style.strokeDashoffset = edge.data.weight > 0 && edge.data.traffic == 0 ? 4 : 0;
             this.dom.title.innerHTML = `Traffic: ${edge.data.traffic.toLocaleString()}`
         } else {
             this.dom.root.style.opacity = edge.active ? 1 : 0;
