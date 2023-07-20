@@ -7,6 +7,7 @@ import TrafficBruteforce from "./methods/trafficbruteforce/bruteforce2";
 import TrafficAnt from "./methods/trafficant/trafficant";
 import TrafficGenetic from "./methods/trafficgenetic/genetic2";
 import Simulated from "./methods/simulated/simulated";
+import TrafficSimulated from "./methods/trafficsimulated/simulated";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -21,4 +22,5 @@ document.addEventListener('DOMContentLoaded', () => {
     app.controls.addMethod(TrafficBruteforce,1);
     app.controls.addMethod(TrafficAnt, 1);
     app.controls.addMethod(TrafficGenetic, 1);
+    app.controls.addMethod(TrafficSimulated, 1);
 })

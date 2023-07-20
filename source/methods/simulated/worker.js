@@ -14,7 +14,7 @@ function swap(path, step) {
 
 }
 
-export default function worker_bruteforce(data){
+export default function worker_simulated(data){
 
     var TIME_LIMIT = data.max_duration * 1000;
     var stepsize = data.stepsize;
@@ -43,6 +43,7 @@ export default function worker_bruteforce(data){
             
         if(score < opt){
             opt = score;
+            perm = newperm
             opt_perm = perm;
 
             postMessage({
@@ -51,7 +52,6 @@ export default function worker_bruteforce(data){
                 done: false
             });
 
-            perm = newperm
         }
         else {
 

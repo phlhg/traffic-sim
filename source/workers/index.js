@@ -6,6 +6,7 @@ import worker_traffic_bruteforce from "../methods/trafficbruteforce/worker";
 import worker_traffic_simpleant from "../methods/trafficant/worker"
 import worker_traffic_genetic from "../methods/trafficgenetic/worker";
 import worker_simulated from "../methods/simulated/worker";
+import worker_traffic_simulated from "../methods/trafficsimulated/worker";
 
 const manager = new WorkerManager();
 
@@ -30,6 +31,9 @@ manager.add("traffic_bruteforce", worker_traffic_bruteforce)
 
 // - Simpleant
 manager.add("traffic_simpleant", worker_traffic_simpleant)
+
+// - Simulated Annealing
+manager.add("traffic_simulated", worker_traffic_simulated)
 
 // - GA
 manager.add("traffic_genetic", worker_traffic_genetic)
