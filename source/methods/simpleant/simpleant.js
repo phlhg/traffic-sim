@@ -38,7 +38,7 @@ export default class SimpleAnt extends Method {
 
         this.done = false;
 
-        this.app.problem = "tsp"
+        this.app.setProblem("tsp");
 
         this.worker = WorkerManager.get("simpleant");
 

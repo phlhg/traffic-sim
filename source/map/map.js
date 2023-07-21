@@ -198,6 +198,8 @@ export default class Map {
 
         this.app.graph = graph ?? this.app.graph
 
+        localStorage.setItem("graph", JSON.stringify(this.app.graph.serialize()))
+
         if(this.app.graph === null){ return; }
 
         this.dom.notice.classList.toggle("active", this.app.graph.getNodes().length <= 0);

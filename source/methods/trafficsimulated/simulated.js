@@ -32,7 +32,7 @@ export default class TrafficSimulated extends Method {
 
         this.done = false;
 
-        this.app.problem = "traffic"
+        this.app.setProblem("traffic");
 
         this.app.graph.forEdges(e => { 
             e.active = true; 

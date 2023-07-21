@@ -31,7 +31,7 @@ export default class Simulated extends Method {
 
         this.done = false;
 
-        this.app.problem = "tsp"
+        this.app.setProblem("tsp")
 
         this.app.graph.forEdges(e => { 
             e.active = 1; 

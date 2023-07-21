@@ -30,7 +30,7 @@ export default class Routing extends Method {
 
         this.done = true;
 
-        this.app.problem = "traffic";
+        this.app.setProblem("traffic");
 
         this.app.graph.forEdges(e => { 
             e.active = false; 

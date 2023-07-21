@@ -12,7 +12,7 @@ export default class Controls {
 
         this.dom.wrapper.innerHTML = `
             <div class="selection">
-                <div class="buttonSelect selected"><strong>TSP</strong></div>
+                <div class="buttonSelect"><strong>TSP</strong></div>
                 <div class="buttonSelect"><strong>Traffic planning</strong></div>
             </div>
             <div class="content"></div>
@@ -34,6 +34,12 @@ export default class Controls {
                 this.updateContent()
             }
         });
+
+        if(this.app.problem == "traffic"){
+            this.dom.buttons[1].classList.add("selected");
+        } else {
+            this.dom.buttons[0].classList.add("selected");
+        }
     }
     
     updateContent() {

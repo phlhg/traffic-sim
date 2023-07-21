@@ -38,7 +38,7 @@ export default class TrafficAnt extends Method {
 
         this.done = false;
 
-        this.app.problem = "traffic"
+        this.app.setProblem("traffic")
 
         this.worker = WorkerManager.get("traffic_simpleant");
 
