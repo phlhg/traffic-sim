@@ -98,7 +98,11 @@ export default class MethodWrapper {
      * Runs the method
      * @returns Returns a promise containing a bool with true for success and false for failure
      */
-    async run(){
+    async run(callback){
+
+        callback = callback ?? function(){}
+        let callbackOK = false;
+
         if(this.running){ return false; }
 
         await this.app.controls.stopMethods();
@@ -123,11 +127,14 @@ export default class MethodWrapper {
         clearInterval(this.interval);
         this.interval = null;
         
+        callbackOK = true;
         this.running = false;
         this.timeEnd = Date.now();
         this.progress = 0;
-        this.running = false;
+
         this.update();
+
+        if(callbackOK){ callback(); }
 
         return true;
     }
