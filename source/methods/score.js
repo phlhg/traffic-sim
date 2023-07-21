@@ -28,13 +28,25 @@ export default class Score {
         this.dom.root.classList.add("empty");
 
         this.dom.root.innerHTML = `
-            <a><span class="material-symbols-outlined">download</span></a>
+            <div class="export" title="Run method a selected amount of times and export data for each run">
+                <select></select>
+                <span class="material-symbols-outlined">download</span>
+            </div>
             <svg viewBox="0 0 500 100">
                 <path d=""/>
             </svg>
         `
+        
+        this.dom.export_btn = this.dom.root.querySelector(".export > span");
+        this.dom.export_select = this.dom.root.querySelector(".export > select");
 
-        this.dom.download = this.dom.root.querySelector("a");
+        [1,2,5,10,15,20,50,100].forEach(n => {
+            let o = document.createElement("option");
+            o.value = n;
+            o.innerText = `${n}x`
+            this.dom.export_select.appendChild(o);
+        })
+
         this.dom.svg = this.dom.root.querySelector("svg")
         this.dom.path = this.dom.root.querySelector("svg > path")
 
@@ -42,6 +54,30 @@ export default class Score {
         this.dom.path.style.stroke = "#fff";
         this.dom.path.style.strokeWidth = "1";
         this.dom.path.style.strokeLinecap = "round";
+
+        let callback = (amount, accumulator) => {
+
+            if(this.scores.length > 0){
+                let start = this.scores[0].time
+                accumulator.push([...this.scores].map(item => { return [item.time-start, item.value]; }));
+            }
+
+            if(amount > 1){
+                this.wrapper.run(callback.bind(this, amount - 1, accumulator));
+            } else {
+                let a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([JSON.stringify(accumulator, null, 2)], { type: 'application/json' }));
+
+                let s = new Date();
+                a.setAttribute("download", `${s.getFullYear()}-${dd(s.getMonth()+1)}-${dd(s.getDate())}-${dd(s.getHours())+dd(s.getMinutes())+dd(s.getSeconds())}-data.json`)
+
+                a.click();
+            }
+        }
+
+        this.dom.export_btn.onclick = e => {
+            callback.bind(this, this.dom.export_select.value, [])()
+        }
 
     }
 
@@ -76,11 +112,6 @@ export default class Score {
 
         this.dom.path.setAttribute("d", d);
 
-        let content = this.scores.map(item => { return `${item.time-start},${item.value}\n` }).join("")
-        this.dom.download.href = URL.createObjectURL(new Blob([content], { type: 'text/csv' }));
-
-        let s = new Date(start);
-        this.dom.download.setAttribute("download", `${s.getFullYear()}-${dd(s.getMonth()+1)}-${dd(s.getDate())}-${dd(s.getHours())+dd(s.getMinutes())+dd(s.getSeconds())}-data.csv`)
     }
 
     add(value){
@@ -93,6 +124,19 @@ export default class Score {
         this.update();
     }
 
+    download(){
+        if(this.scores.length < 1){ return; }
+        let start = this.scores[0].time
+
+        let a = document.createElement("a");
+        let content = this.scores.map(item => { return `${item.time-start},${item.value}\n` }).join("")
+        a.href = URL.createObjectURL(new Blob([content], { type: 'text/csv' }));
+
+        let s = new Date(start);
+        a.setAttribute("download", `${s.getFullYear()}-${dd(s.getMonth()+1)}-${dd(s.getDate())}-${dd(s.getHours())+dd(s.getMinutes())+dd(s.getSeconds())+dd(s.getMilliseconds())}-data.csv`)
+
+        a.click();
+    }
 
     getHTMLElement(){
         return this.dom.root;
