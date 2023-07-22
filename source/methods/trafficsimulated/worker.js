@@ -48,16 +48,19 @@ export default function worker_traffic_simulated(data){
 
         var score = calculateTraffic(newgraph, Infinity);
             
-        if(score < opt){
-            opt = score;
+        if(score < calculateTraffic(graph, Infinity)){
             graph = newgraph
-            opt_graph = newgraph;
 
-            postMessage({
-                graph: graph.serialize(),
-                score: opt,
-                done: false
-            });
+            if (score < opt) {
+                opt = score;
+                opt_graph = newgraph;
+
+                postMessage({
+                    graph: graph.serialize(),
+                    score: opt,
+                    done: false
+                });
+            }
 
         }
         else {

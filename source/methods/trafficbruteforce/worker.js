@@ -11,6 +11,9 @@ function* p(arr, acc){
 }
 
 export default function worker_traffic_bruteforce(data){
+    var TIME_LIMIT = data.max_duration * 1000;
+
+    let start_time = new Date().getTime();
 
     let graph = Graph.from(data.graph);
     let worker_id = data.worker_id;
@@ -29,6 +32,13 @@ export default function worker_traffic_bruteforce(data){
     progress_cnt += worker_id;
 
     while(!perm.done){
+
+        let cur_time = new Date().getTime();
+        let T = cur_time - start_time;
+        if(T >= TIME_LIMIT) {
+            console.log("TIMELIMIT DONE")
+            break;
+        }
 
         graph.forEdges(e => { e.active = false; })
         perm.value.forEach(e => { graph.getEdge(e[0],e[1]).active = true; })

@@ -41,16 +41,21 @@ export default function worker_simulated(data){
 
         var score = length(newperm);
             
-        if(score < opt){
-            opt = score;
-            perm = newperm
-            opt_perm = perm;
+        if(score < length(perm)){
 
-            postMessage({
-                value: perm,
-                score: opt,
-                done: false
+            perm = newperm
+
+            if (score < opt) {
+                opt = score;
+                opt_perm = perm;
+                postMessage({
+                    value: perm,
+                    score: opt,
+                    done: false
             });
+
+            }
+
 
         }
         else {
@@ -60,6 +65,7 @@ export default function worker_simulated(data){
             // with increasing T it gets less likely
             if (Math.random() > probability) {
                 perm = newperm
+
             }
         }
 

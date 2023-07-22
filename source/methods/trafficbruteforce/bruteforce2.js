@@ -28,6 +28,12 @@ export default class TrafficBruteforce extends Method {
             formatter: v => { return `${Math.pow(2, v)}`}
         })
 
+        this.addSetting("max_duration", SliderSetting, {
+            name: "Time limit",
+            min: 0.5, max: 60, value: 5, step: 0.1,
+            formatter: v => { return `${v.toFixed(1)}s`}
+        })
+
         this.done = [];
 
     }
@@ -86,7 +92,8 @@ export default class TrafficBruteforce extends Method {
                 worker_id: i,
                 graph: this.app.graph.serialize(),
                 edges_prefix: pool[i].prefix,
-                edges_remain: pool[i].remaining
+                edges_remain: pool[i].remaining,
+                max_duration: this.getSetting("max_duration"),
             })
         }
 

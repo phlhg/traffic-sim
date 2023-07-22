@@ -3,6 +3,7 @@ import { factorial, permute } from "../../utils";
 
 export default function worker_bruteforce(data){
 
+    var TIME_LIMIT = data.max_duration * 1000;
     var opt = Infinity;
     var opt_perm = [];
 
@@ -12,7 +13,16 @@ export default function worker_bruteforce(data){
     var perm_amount = factorial(data.cities.length);
     var perm_done = 0;
 
+    let start_time = new Date().getTime();
     while(!perm.done){
+
+        let cur_time = new Date().getTime();
+        let T = cur_time - start_time;
+        if(T >= TIME_LIMIT) {
+            console.log("TIMELIMIT DONE")
+            break;
+        }
+
         var w = length(perm.value);
         
         if(w < opt){

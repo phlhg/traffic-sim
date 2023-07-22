@@ -2,6 +2,7 @@ import { sleep } from "../../utils";
 import Message from "../../utils/message";
 import WorkerManager from "../../workers/manager";
 import Method from "../method"
+import { SliderSetting, BooleanSetting } from "../settings";
 
 export default class Bruteforce extends Method {
 
@@ -12,6 +13,12 @@ export default class Bruteforce extends Method {
         this.name = "Bruteforce";
         this.description = "Naive approach to solving the Traveling Salesmen Problem by simply iterating over all possible paths and selecting the path with minimal cost."
 
+        this.addSetting("max_duration", SliderSetting, {
+            name: "Time limit",
+            min: 0.5, max: 60, value: 5, step: 0.1,
+            formatter: v => { return `${v.toFixed(1)}s`}
+        })
+    
         this.done = false;
 
     }
@@ -56,7 +63,8 @@ export default class Bruteforce extends Method {
         }
 
         worker.postMessage({
-            cities: this.app.graph.getNodes()
+            cities: this.app.graph.getNodes(),
+            max_duration: this.getSetting("max_duration"),
         });
 
         while(!this.done){ await sleep(100); }

@@ -15,7 +15,7 @@ export default class Genetic extends Method {
 
         this.addSetting("population", SliderSetting, { 
             name: "Population",
-            min: 1, max: 2500, value: 100
+            min: 1, max: 100, value: 10
         });
 
         this.addSetting("generations", SliderSetting, {
@@ -31,6 +31,12 @@ export default class Genetic extends Method {
         this.addSetting("crossover", BooleanSetting, {
             name: "Enable Crossover", 
             value: false
+        })
+        
+        this.addSetting("max_duration", SliderSetting, {
+            name: "Time limit",
+            min: 0.5, max: 60, value: 5, step: 0.1,
+            formatter: v => { return `${v.toFixed(1)}s`}
         })
 
         this.done = false;
@@ -78,7 +84,9 @@ export default class Genetic extends Method {
             population: this.getSetting("population"),
             generations: this.getSetting("generations"),
             mutation: this.getSetting("mutation"),
-            crossover: this.getSetting("crossover")
+            crossover: this.getSetting("crossover"),
+            max_duration: this.getSetting("max_duration"),
+
         });
 
         while(!this.done) { await sleep(100); }
