@@ -1,11 +1,17 @@
+#!/usr/bin/env python3
+
 import click
 import os
 import json
 import matplotlib.pyplot as plt
 
+plt.rcParams['text.color'] = "#666"
+plt.rcParams['axes.labelcolor'] = "#666"
+plt.rcParams['xtick.color'] = "#666"
+plt.rcParams['ytick.color'] = "#666"
 
 '''
-python main.py --src=../scores --ymax 100000
+python main.py --src=./scores --ymax 100000
 '''
 
 @click.command()
@@ -29,17 +35,22 @@ def plot(
 
          #plt.title(file)
 
-         fig = plt.figure()
+         fig = plt.figure(facecolor='#111111')
          ax = plt.gca()
+         ax.set_facecolor("#111111")
+         ax.spines['bottom'].set_color('#666')
+         ax.spines['top'].set_color('none')
+         ax.spines['right'].set_color('none')
+         ax.spines['left'].set_color('#666')
 
-         plt.scatter(scores, times, marker='x')
+         plt.scatter(scores, times, marker='.', color="#fff")
          ax.set_ylim(0.1, ymax)
          ax.set_yscale("log")
          
-         plt.xlabel('time / ms')
+         plt.xlabel('time [ms]')
          plt.ylabel('cost')
 
-         plt.savefig(file+".png")
+         plt.savefig(f"plots/{file}.png", dpi=600)
          
          #  clean plot
          plt.clf()
