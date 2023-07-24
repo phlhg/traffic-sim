@@ -4,6 +4,7 @@ body { overflow-x: hidden; }
 
 .material-symbols-outlined { font-size: inherit; line-height: inherit; }
 
+.social-link,
 .controls .method .score .score-container > .export > span,
 .map > .editor > .delete,
 .controls .buttonSelect,
@@ -423,4 +424,21 @@ body { overflow-x: hidden; }
 
 .message.active {
     transform: translate(-50%, 0);
+}
+
+.social-link {
+    position: absolute;
+    display: block;
+    top: 15px; right: 15px;
+    height: 20px; width: 20px;
+    z-index: 200;
+    opacity: 0.5;
+}
+
+.social-link:hover { opacity: 1; }
+
+.social-link > img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100; 
 }
