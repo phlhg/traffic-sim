@@ -4,10 +4,6 @@ Finding an optimal solution to a traffic problem using Ant Colony Optimization
 
 ![Preview](./preview.png)
 
-## Features
-
-[WIP]
-
 ## Run the app
 
 > ℹ️ **Windows**  
