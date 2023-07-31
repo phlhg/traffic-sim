@@ -89,7 +89,13 @@ export default class Genetic extends Method {
 
         });
 
-        while(!this.done) { await sleep(100); }
+        let start_time = Date.now();
+        let time_limit = this.getSetting("max_duration") * 1000;
+
+        while(!this.done) { 
+            await sleep(100); 
+            if(Date.now() - start_time >= time_limit){ this.done = true; }
+        }
 
         this.worker.terminate();
         this.worker = null;
