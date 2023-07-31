@@ -5,8 +5,10 @@ function* p(arr, acc){
     if(arr.length < 1){ 
         yield acc; 
     } else {
-        yield* p(arr.slice(1), acc)
-        yield* p(arr.slice(1), acc.concat([arr[0]]))
+        let pick = Math.floor(Math.random()*arr.length)
+        let next = [...arr]; next.splice(pick,1);
+        yield* p(next, acc)
+        yield* p(next, acc.concat([arr[pick]]))
     }
 }
 
