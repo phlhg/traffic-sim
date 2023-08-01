@@ -9,7 +9,7 @@ export default class Routing extends Method {
         super(...data);
 
         this.name = "Routing";
-        this.description = "Connects close cities and calculates the traffic to visualize used the routing."
+        this.description = "Connects close cities and calculates the traffic to visualize the routing."
 
         this.addSetting("sp_limit", SliderSetting, {
             name: "Shortest Path Limit",

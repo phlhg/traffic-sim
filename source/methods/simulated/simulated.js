@@ -10,7 +10,7 @@ export default class Simulated extends Method {
         super(...data);
 
         this.name = "Simulated Annealing";
-        this.description = "Simulated Annealing approach to solving the Traveling Salesmen Problem."
+        this.description = "Optimize the cycle imitating the cooldown of a material (Annealing)."
 
         this.done = false;        
         

@@ -11,7 +11,7 @@ export default class Bruteforce extends Method {
         super(...data);
 
         this.name = "Bruteforce";
-        this.description = "Naive approach to solving the Traveling Salesmen Problem by simply iterating over all possible paths and selecting the path with minimal cost."
+        this.description = "Naive approach - Iterate over all possible cycles and select the one with minimal cost."
 
         this.addSetting("max_duration", SliderSetting, {
             name: "Time limit",

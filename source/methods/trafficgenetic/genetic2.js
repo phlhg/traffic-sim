@@ -11,8 +11,8 @@ export default class TrafficGenetic extends Method {
 
         this.worker = null;
 
-        this.name = "GeneticAlgorithm";
-        this.description = "Traffic optimization using a variation of genetic algorithm";
+        this.name = "Genetic Algorithm";
+        this.description = "Optimize the network by imitating evolutionary development using mutations and crossovers.";
 
         this.addSetting("population", SliderSetting, { 
             name: "Population",
@@ -28,16 +28,16 @@ export default class TrafficGenetic extends Method {
             name: "Mutation Probability",
             min: 0, max: 1, value: 0.2, step: 0.01,
         })
-
-        this.addSetting("crossover", BooleanSetting, {
-            name: "Enable Crossover", 
-            value: false
-        })
         
         this.addSetting("max_duration", SliderSetting, {
             name: "Time limit",
             min: 0.5, max: 60, value: 5, step: 0.1,
             formatter: v => { return `${v.toFixed(1)}s`}
+        })
+
+        this.addSetting("crossover", BooleanSetting, {
+            name: "Enable Crossover", 
+            value: false
         })
 
         this.done = false;

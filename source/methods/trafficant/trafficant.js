@@ -11,7 +11,7 @@ export default class TrafficAnt extends Method {
         super(...data);
 
         this.name = "Ant Colony";
-        this.description = "Implementation of the Ant Conolony Optimizer"
+        this.description = "Optimize the network using ants collaborating by leaving pheromones on the edges."
 
         this.addSetting("num_ants", SliderSetting, { 
             name: "Ants",

@@ -13,7 +13,7 @@ export default class Controls {
         this.dom.wrapper.innerHTML = `
             <div class="selection">
                 <div class="buttonSelect"><strong>TSP</strong></div>
-                <div class="buttonSelect"><strong>Traffic planning</strong></div>
+                <div class="buttonSelect"><strong>Traffic</strong></div>
             </div>
             <div class="content"></div>
         `

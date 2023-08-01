@@ -20,7 +20,7 @@ export default class TrafficBruteforce extends Method {
         super(...data);
 
         this.name = "Bruteforce";
-        this.description = "Naive approach to the Traffic Problem by iterating over all possible permutations and selecting the best."
+        this.description = "Naive approach - Iterate over all possible networks and select the one with minimal cost."
 
         this.addSetting("num_workers", SliderSetting, {
             name: "Number of Workers",

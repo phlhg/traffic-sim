@@ -10,8 +10,8 @@ export default class SimpleAnt extends Method {
 
         this.worker = null;
 
-        this.name = "SimpleAnts";
-        this.description = "Simple ANT implementation";
+        this.name = "Ant Colony";
+        this.description = "Optimize the cycle using ants collaborating by leaving pheromones on the edges.";
 
         this.addSetting("num_ants", SliderSetting, { 
             name: "Ants",
